@@ -1,0 +1,6 @@
+{
+    "seed" : [
+        "https://en.wikipedia.org/wiki/Main_Page"
+    ]
+    "args": [ "10", "5000"]
+}

@@ -1,0 +1,7 @@
+{
+    "masterURL": "10.0.0.17:8000",
+    "port" : "8002",
+    "seed" : ["https://signin.aws.amazon.com/",
+                "https://labs.vocareum.com/"
+    ]
+}
