@@ -68,7 +68,7 @@ public class DBWrapper {
 		this.docDB = myEnv.openDatabase(null, DOC_STORE, dbConfig);
 		this.channelDB = myEnv.openDatabase(null, CHANNEL_STORE, dbConfig);
 		this.contentDB = myEnv.openDatabase(null, CONTENT_STORE, dbTempConfig);
-		this.seenURLDB = myEnv.openDatabase(null, SEEN_STORE, dbTempConfig);
+		this.seenURLDB = myEnv.openDatabase(null, SEEN_STORE, dbConfig);
 		
 		//this.userValBinding = new SerialBinding<UserVal>(this.catalog, UserVal.class);
 		this.docValBinding = new SerialBinding<DocVal>(this.catalog, DocVal.class);

@@ -51,6 +51,7 @@ import edu.upenn.cis.stormlite.routers.IStreamRouter;
 import edu.upenn.cis.stormlite.tuple.Fields;
 import edu.upenn.cis.stormlite.tuple.Tuple;
 import edu.upenn.cis.stormlite.tuple.Values;
+import edu.upenn.cis455.crawler.distributed.DistributedCrawler;
 import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
 import edu.upenn.cis455.crawler.info.URLInfo;
 import edu.upenn.cis455.storage.DocVal;
@@ -378,10 +379,12 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
         }
        // System.out.println("current queue size: " + XPathCrawler.getInstance().getFrontier().getSize());
         CrawlerBolt.activeThreads.getAndIncrement(); //increment number of active threads
+        System.out.println("file count: " + XPathCrawler.getInstance().getFileCount().get());
         HashMap<String, RobotsTxtInfo> robotMap = XPathCrawler.getInstance().getRobotMap();
         HashMap<String, Date> lastCrawled = XPathCrawler.getInstance().getLastCrawled();
         HttpsURLConnection conn = null;
         
+        //System.out.println("current crawl links in bolt: " + XPathCrawler.getInstance().getLinksCrawled().get());
         if(url.startsWith("https://")) {
         	//System.out.println("received URL: " + url);
 			  try {
@@ -465,7 +468,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						String type = conn.getContentType();
 						//System.out.println("head type is: " + type + " url: " + url);
 						int statusXX = responseCode / 100;
-						
+						XPathCrawler.getInstance().getLinksCrawled().getAndIncrement(); //increment links crawled
 						if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 							//retrieve document
 							System.out.println(url + ": Not modified");							
@@ -497,8 +500,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 							CrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}																	
-						if(type == null || !isValidType(type)) {
-							System.out.println("we here");	
+						if(type == null || !isValidType(type)) {	
 							conn.disconnect();
 							CrawlerBolt.activeThreads.getAndDecrement();
 							return;
@@ -655,6 +657,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				}
 				int responseCode = Integer.parseInt(responseHeaders.get("Code"));
 				String type = responseHeaders.get("content-type");
+				XPathCrawler.getInstance().getLinksCrawled().getAndIncrement();
 				
 				if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 					//retrieve document

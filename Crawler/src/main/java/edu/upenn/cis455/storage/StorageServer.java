@@ -2,9 +2,13 @@ package edu.upenn.cis455.storage;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -12,12 +16,15 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import edu.upenn.cis455.crawler.XPathCrawler;
 
@@ -28,9 +35,7 @@ public class StorageServer {
 	private AmazonS3 s3client;
 	private static final StorageServer instance = new StorageServer();
 	private final String BUCKET_NAME = "cis455-group13-crawldata";
-	private final String ACCESS_KEY = "ASIA4T44HA5ZXU7KPZPD";
-	private final String SECRET_KEY = "FSK5iJq1VbYtiYi+YkU1OMiv+c2TrsiupzWcDtCH";
-	private final String SESSION_TOKEN = "FwoGZXIvYXdzEIj//////////wEaDJ1rbqexam/zYoz7nCLGAdA6rTiR19uRPkC4+LwNsru2J4V1cu0tI/37jUUeGeTPVwp8YurSNE4FUjtaLuWw9J+iWvjDoZ2Lf4gLcgON9G0Wd8MZk3MnwbQaS7udSQEX/5/Nu6mRSrB7ZTp2w1N2fJC6u2fCU8d7YP/j9KZtp/6APOgqK9TKHcdhtjUlhmal7O/UV0sIG8OhSG8i513mplSTHv15XOkcqfn9zleYKd0TIvRd5HGP/hSC6WUcmSn6YDlkm416RX+ugWyhNHXqU+5pO6dd6yjE7Mz1BTItLpO7Tz4B4EB8J951c8brWWbpwNyiThpZC7FvsXVlLll6j1y6i+DWRiAgvArc";
+	
 	private StorageServer() { 
 		
 	}
@@ -364,13 +369,32 @@ public class StorageServer {
 	
 	public void writetoS3(String directory) {
 		/* initialize s3 client */
-		getInstance().credentials = new BasicSessionCredentials(ACCESS_KEY, SECRET_KEY, SESSION_TOKEN);
+		JSONParser parser = new JSONParser();
+		try {
+			String file = System.getProperty("user.dir")+"/CrawlerConfigs/s3_config.json";
+            Object obj = parser.parse(new FileReader(file));
+
+            JSONObject jsonObj = (JSONObject) obj;
+            
+            JSONArray access_key = (JSONArray) jsonObj.get("accKey");
+            JSONArray secret_key = (JSONArray) jsonObj.get("secKey");
+            JSONArray session_token = (JSONArray) jsonObj.get("seshToken");
+                                            
+            String accessKey = access_key.toArray()[0].toString();
+            String secretKey = secret_key.toArray()[0].toString();
+            String sessionToken = session_token.toArray()[0].toString();
+            
+            getInstance().credentials = new BasicSessionCredentials(accessKey, secretKey, sessionToken);
 			getInstance().s3client = AmazonS3ClientBuilder.standard()
 					.withCredentials(new AWSStaticCredentialsProvider(credentials))
 					.withRegion(Regions.US_EAST_1)
 					.build(); 
 		
-			getInstance().s3client.putObject(BUCKET_NAME, "CorpusD_0", new File(directory)); // replace crawA with node name			    			
+			getInstance().s3client.putObject(BUCKET_NAME, "CorpusD_0", new File(directory)); // replace crawA with node name
+		} catch(AmazonS3Exception | IOException | ParseException e) {
+			e.printStackTrace();
+			return;
+		}					    			
 			return;
 	}
 	
@@ -381,6 +405,33 @@ public class StorageServer {
 		try {		   
 		    // Open the cursor. 
 		    cursor = myDB.getDocDB().openCursor(null, null);
+
+		    // Get the DatabaseEntry objects that the cursor will use.
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+
+		    // Iterate from the last record to the first in the database
+		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
+		        OperationStatus.SUCCESS) {
+		        
+		        count++;
+		    }
+		} catch (DatabaseException de) {
+		    System.err.println("Error accessing database." + de);
+		}  finally {
+		    // Cursors must be closed.
+		    cursor.close();		    		    
+		}
+		return count;
+	}
+	
+	public int getLinksCrawledCount() {
+		
+		Cursor cursor = null;
+		int count = 0;
+		try {		   
+		    // Open the cursor. 
+		    cursor = myDB.getSeenDB().openCursor(null, null);
 
 		    // Get the DatabaseEntry objects that the cursor will use.
 		    DatabaseEntry foundKey = new DatabaseEntry();

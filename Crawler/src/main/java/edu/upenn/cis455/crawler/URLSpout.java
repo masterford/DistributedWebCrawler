@@ -47,9 +47,10 @@ public class URLSpout implements IRichSpout {
     	
     	try {   		
 			reader = new BufferedReader(new FileReader("URLDisk.txt"));
-			//reader.reset();
-			reader.mark(XPathCrawler.getInstance().getFileCount().get());
-			reader.reset();
+			int num_lines = XPathCrawler.getInstance().getFileCount().get();
+			for (int i = 0; i < num_lines; i++) {
+				reader.readLine();  //set reader to latest line
+			}			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

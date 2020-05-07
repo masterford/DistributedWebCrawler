@@ -31,6 +31,7 @@ public class XPathCrawler {
  // private HashSet<String> seenContent; //set to maintain seen content
   private HashMap<String, Date> lastCrawled; //data structure to keep track of the last time a hostname server was crawled
   private InetAddress hostMonitor;
+  private AtomicInteger linksCrawled;
   private AtomicInteger fileCount;
   private AtomicInteger inFlightMessages; //used to keep track of messages being routed so that we don't shutdown prematurely
   private URLFrontier frontier;
@@ -65,7 +66,7 @@ public class XPathCrawler {
 		crawler.lastCrawled = new HashMap<String, Date>();
 		crawler.fileCount = new AtomicInteger(); //store number of downloaded files
 		crawler.inFlightMessages = new AtomicInteger();
-		
+		crawler.linksCrawled = new AtomicInteger(); //store number of links crawled
 		crawler.frontier = new URLFrontier(startURL);
 		/*Add more seed URLS */
 		//crawler.frontier.enqueue("https://en.wikipedia.org/wiki/File_system");
@@ -86,7 +87,7 @@ public class XPathCrawler {
 			if(diskFile.exists()) { //incremental crawling
 				int fileCount = StorageServer.getInstance().getFileCount();
 				crawler.fileCount.set(fileCount); //update fileCount
-				crawler.frontier.clear(); //remove current Seed URLS				
+				crawler.frontier.clear(); //remove current Seed URLS
 			} else {
 				if(diskFile.createNewFile()) {
 					System.out.println("file created successfully");
@@ -109,6 +110,11 @@ public class XPathCrawler {
   public int getMaxFileNum() {
 	 return getInstance().maxFileNum;
   }
+  
+  public AtomicInteger getLinksCrawled() {
+	  return getInstance().linksCrawled;
+  }
+  
   public int getmaxDocSize() {
 	  return getInstance().maxDocSize;
   }
@@ -276,11 +282,13 @@ public class XPathCrawler {
       cluster.shutdown();       
       System.out.println("Writing to file"); 
       XPathCrawler.getInstance().getDB().writetoFile("CorpusD_0.txt");
-      System.out.println("Uploading to S3");
-      XPathCrawler.getInstance().getDB().writetoS3("CorpusD_0.txt");
+      
       if(XPathCrawler.getInstance().diskFile != null) {
     	  XPathCrawler.getInstance().diskFile.delete(); //delete URLDIsk File
-      }      
+      } 
+      System.out.println("Uploading to S3");
+      XPathCrawler.getInstance().getDB().writetoS3("CorpusD_0.txt");
+           
      // StorageServer.getInstance().close();
       System.exit(0);
   }

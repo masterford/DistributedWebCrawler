@@ -658,6 +658,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				}
 				int responseCode = Integer.parseInt(responseHeaders.get("Code"));
 				String type = responseHeaders.get("content-type");
+				DistributedCrawler.getInstance().getLinksCrawled().getAndIncrement(); //increment links crawled
 				
 				if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 					//retrieve document
