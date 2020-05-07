@@ -25,7 +25,7 @@ public class S3Upload {
 	public static void main(String[] args) {
 		/* initialize s3 client */
 		String BUCKET_NAME = "cis455-group13-crawldata";	
-		String directory = "CorpusD_0.txt"; //TODO: change
+		String directory = args[0]; //TODO: change
 		JSONParser parser = new JSONParser();
 		try {
 			String file = System.getProperty("user.dir")+"/CrawlerConfigs/s3_config.json";
