@@ -22,7 +22,6 @@ import edu.upenn.cis.stormlite.spout.IRichSpout;
 import edu.upenn.cis.stormlite.spout.SpoutOutputCollector;
 import edu.upenn.cis.stormlite.tuple.Fields;
 import edu.upenn.cis.stormlite.tuple.Values;
-import edu.upenn.cis455.crawler.XPathCrawler;
 import edu.upenn.cis455.crawler.info.URLInfo;
 
 public class DistributedURLSpout implements IRichSpout {
@@ -127,11 +126,10 @@ public class DistributedURLSpout implements IRichSpout {
 			}			
     	}
     	
-    	if(DistributedCrawler.getInstance().getFrontier().isEmpty() || fileCount >= DistributedCrawler.getInstance().getMaxFileNum()) { // Handle Shutdown
+    	if(DistributedCrawler.getInstance().getFrontier().isEmpty() || fileCount >= DistributedCrawler.getInstance().getMaxFileNum() || DistributedCrawler.getInstance().getShutdown()) { // Handle Shutdown
     		if(DistributedURLSpout.getActiveThreads() <= 0 && DistributedCrawlerBolt.getActiveThreads() <= 0 && DistributedDocumentParserBolt.getActiveThreads() <= 0 && DistributedURLFilterBolt.getActiveThreads() <= 0 && 
     			HostSplitterBolt.getActiveThreads() <= 0 && DistributedCrawler.getInstance().getInFlightMessages() <= 0) {
-    			DistributedCrawler.getInstance().shutdown(); //call shutdown
-    			//System.out.println("Spout Called Shutdown");
+    			DistributedCrawler.getInstance().shutdown(); //call shutdown    			
     			return;
     		} else {
     			return; //just return and don't emit anything

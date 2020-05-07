@@ -152,8 +152,7 @@ public class MasterNode {
 
         int numWorkers = Integer.parseInt(args[1]);
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-
-
+        
         /*
             WORK IN PROGRESS : For dynamic addition of worker
 
@@ -256,7 +255,7 @@ public class MasterNode {
                 String status = request.queryParams("status");
                 int linksCrawled = Integer.parseInt(request.queryParams("crawled"));
                 int linksDownloaded = Integer.parseInt(request.queryParams("downloaded"));
-
+                double rate = Double.parseDouble(request.queryParams("rate")); 
                 if(!workerInfo.containsKey(workerEntry)){
                     
                     Date now = new Date();
@@ -272,6 +271,7 @@ public class MasterNode {
                     workerInfo.get(workerEntry).setStatus(status);
                     workerInfo.get(workerEntry).setCrawlLinks(linksCrawled);
                     workerInfo.get(workerEntry).setCrawlDownloaded(linksDownloaded);
+                    workerInfo.get(workerEntry).setCrawlRate(rate);
                 }
 
                 if(regWorkers == numWorkers){

@@ -149,7 +149,7 @@ public class StorageServer {
 	}
 	
 	/*Retrieve crawled document from the database based on URL key */
-	public int addURL(String url) {
+	public synchronized int addURL(String url) {
 		DatabaseEntry value = new DatabaseEntry("".getBytes()); //empty
 		DatabaseEntry key = new DatabaseEntry(url.getBytes());
 		

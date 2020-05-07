@@ -81,15 +81,20 @@ public class DistributedCrawler {
 		} 
 		
 		storagePath = System.getProperty("user.dir")+"/DistributedStorage/Worker_"+String.valueOf(WorkerNode.workerIndex);
+		
+		
 		File file = new File(storagePath);
-		if(file.mkdir()) {
-			System.out.println("Directory created successfully");
+		
+		if(!file.exists() && file.mkdir()) {
+			System.out.println("Directory created successfully");			
 		}
+		StorageServer.getInstance().init(storagePath);
 		/*create URLDisk File */
 		try {
 			diskFile = new File(storagePath + "/URLDisk.txt");
 			if(diskFile.exists()) { //incremental crawling
 				int fileCount = StorageServer.getInstance().getFileCount();
+				System.out.println("file count from disk: " + fileCount);
 				crawler.fileCount.set(fileCount); //update fileCount
 				crawler.frontier.clear(); //remove current Seed URLS									
 			} else {
@@ -99,9 +104,8 @@ public class DistributedCrawler {
 			}			
 		} catch (IOException e) {
 			
-		}
+		}		
 		
-		StorageServer.getInstance().init(storagePath);
 	}
 	 
   public void setmaxDocSize(int size) {
@@ -187,7 +191,7 @@ public class DistributedCrawler {
 	  if(DistributedCrawler.getInstance().diskFile != null) {
     	  DistributedCrawler.getInstance().diskFile.delete(); //delete URLDIsk File
       }  
-	  DistributedCrawler.getInstance().getDB().writetoFile(storagePath + "/corpus" + alphabetIndex[WorkerNode.workerIndex] + "_5000.txt"); 
+	  DistributedCrawler.getInstance().getDB().writetoFile(storagePath + "/corpus" + alphabetIndex[WorkerNode.workerIndex] + "_0.txt"); 
   }
   
   public boolean getShutdown() {

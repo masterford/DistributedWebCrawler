@@ -51,13 +51,11 @@ import edu.upenn.cis.stormlite.routers.IStreamRouter;
 import edu.upenn.cis.stormlite.tuple.Fields;
 import edu.upenn.cis.stormlite.tuple.Tuple;
 import edu.upenn.cis.stormlite.tuple.Values;
-import edu.upenn.cis455.crawler.CrawlerBolt;
-import edu.upenn.cis455.crawler.XPathCrawler;
 import edu.upenn.cis455.crawler.info.RobotsTxtInfo;
 import edu.upenn.cis455.crawler.info.URLInfo;
 import edu.upenn.cis455.storage.DocVal;
 import edu.upenn.cis455.storage.StorageServer;
-import test.edu.upenn.cis.stormlite.WordCounter;
+
 
 public class DistributedCrawlerBolt implements IRichBolt {
 	static Logger log = Logger.getLogger(DistributedCrawlerBolt.class);
@@ -385,7 +383,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
         HttpsURLConnection conn = null;
         
         int c = DistributedCrawler.getInstance().getFileCount().get();
-        if( c % 1000 == 0) {
+        if( c != 0 && c % 1000 == 0) {
         	System.out.println("file count: " + c);
         }
         
@@ -455,7 +453,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 								}								
 							}							
 						}
-								
+							
 						/*Send Head Request  */		
 						DocVal doc = DistributedCrawler.getInstance().getDB().getDocInfo(url);
 						conn = (HttpsURLConnection) httpsUrl.openConnection();
@@ -473,7 +471,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						//System.out.println("head type is: " + type + " url: " + url);
 						int statusXX = responseCode / 100;
 						DistributedCrawler.getInstance().getLinksCrawled().getAndIncrement(); //increment links crawled
-						
+						//System.out.println("response " + responseCode);
 						if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 							//retrieve document
 							//System.out.println(url + ": Not modified");	
@@ -511,7 +509,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}	
-												
+											
 						conn.disconnect();
 						conn = (HttpsURLConnection) httpsUrl.openConnection();
 						conn.setConnectTimeout(SOCKET_TIMEOUT);
@@ -522,14 +520,16 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						sendMonitoring(url);
 						lastCrawled.put(hostName, new Date()); //update last crawled
 						responseCode = conn.getResponseCode();
+						//System.out.println("get response " + responseCode);	
 						if((responseCode / 100) != 2) {
 							conn.disconnect();	
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}
 						long size = conn.getContentLengthLong();
+						//System.out.println("size is: " + size);
 						String body; 
-						if( size > XPathCrawler.getInstance().getmaxDocSize()) {
+						if( size > DistributedCrawler.getInstance().getmaxDocSize()) {
 							conn.disconnect();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;

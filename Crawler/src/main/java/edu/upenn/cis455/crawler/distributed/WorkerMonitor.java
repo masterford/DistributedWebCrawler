@@ -9,7 +9,7 @@ import edu.upenn.cis455.crawler.distributed.WorkerNode;
 import java.net.*;
 import java.io.*;
 public class WorkerMonitor  extends Thread{
-
+	private int previous = 0;
     
 
     public WorkerMonitor(){
@@ -17,8 +17,13 @@ public class WorkerMonitor  extends Thread{
     }
     //TODO: Change the way you are setting the keys read and written
     public String constructGetRequest(){
+    	int current = WorkerNode.getLinksCrawled();
+    	double rate = 0.0;
+    	rate = ( (double) current - (double) previous) / 10;
+    	System.out.println("current is : " + current + " previous is: " + previous + " calculated rate is: " + rate);
+    	previous = current;
        String url =  "http://"+ WorkerNode.getMasterUrl()+"/workerstatus?port=" + WorkerNode.getPort()
-                    + "&status="+WorkerNode.getStatus()+ "&crawled="+WorkerNode.getLinksCrawled() + "&downloaded="+WorkerNode.getLinksDownloaded();
+                    + "&status="+WorkerNode.getStatus()+ "&crawled="+WorkerNode.getLinksCrawled() + "&downloaded="+WorkerNode.getLinksDownloaded() + "&rate="+rate;
         
         return url;
     }

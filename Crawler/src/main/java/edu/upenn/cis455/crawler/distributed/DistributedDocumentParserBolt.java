@@ -19,6 +19,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.sleepycat.je.LogWriteException;
+
 import edu.upenn.cis.stormlite.OutputFieldsDeclarer;
 import edu.upenn.cis.stormlite.TopologyContext;
 import edu.upenn.cis.stormlite.bolt.IRichBolt;
@@ -163,11 +165,19 @@ public class DistributedDocumentParserBolt implements IRichBolt{
     		return;
     	}
     	//Check for duplicate content
-    	String hash = DigestUtils.md5Hex(doc.getBody());
-    	if(DistributedCrawler.getInstance().getDB().addContentHash(hash) != 0) { //if not 0 it means this content is already seen    	
+    	try {
+    		String hash = DigestUtils.md5Hex(doc.getBody());
+        	if(DistributedCrawler.getInstance().getDB().addContentHash(hash) != 0) { //if not 0 it means this content is already seen    	
+        		DistributedDocumentParserBolt.activeThreads.getAndDecrement();
+        		return;
+        	}
+    	} catch(LogWriteException e ) { //memory full
+    		e.printStackTrace();
     		DistributedDocumentParserBolt.activeThreads.getAndDecrement();
+    		DistributedCrawler.getInstance().shutdown();
     		return;
     	}
+    	
     	//check language    	
     	   	
     	DistributedCrawler.getInstance().incrementInflightMessages();
@@ -190,10 +200,18 @@ public class DistributedDocumentParserBolt implements IRichBolt{
     			return;
     		}
     		
+    		
     		if(input.getStringByField("toStore") != null && input.getStringByField("toStore").equals("true")) {
-        		DistributedCrawler.getInstance().getDB().addDocInfo(url, doc); //store document in DB
-        		DistributedCrawler.getInstance().getFileCount().getAndIncrement(); //increment file count
-        		//System.out.println("Current file count: " + DistributedCrawler.getInstance().getFileCount().get());
+    			try {
+    				DistributedCrawler.getInstance().getDB().addDocInfo(url, doc); //store document in DB
+            		DistributedCrawler.getInstance().getFileCount().getAndIncrement(); //increment file count
+    			} catch(LogWriteException e) {
+    				e.printStackTrace();
+    				DistributedDocumentParserBolt.activeThreads.getAndDecrement();
+    	    		DistributedCrawler.getInstance().shutdown();
+    	    		return;
+    			}
+        		
         	}
         
     		Elements links = jdoc.select("a[href]");
