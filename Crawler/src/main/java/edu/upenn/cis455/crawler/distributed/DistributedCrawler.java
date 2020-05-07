@@ -91,7 +91,7 @@ public class DistributedCrawler {
 			if(diskFile.exists()) { //incremental crawling
 				int fileCount = StorageServer.getInstance().getFileCount();
 				crawler.fileCount.set(fileCount); //update fileCount
-				crawler.frontier.clear(); //remove current Seed URLS				
+				crawler.frontier.clear(); //remove current Seed URLS									
 			} else {
 				if(diskFile.createNewFile()) {
 					System.out.println("file created successfully");

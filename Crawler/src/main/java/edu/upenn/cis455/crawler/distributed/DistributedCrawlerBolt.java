@@ -60,7 +60,7 @@ import edu.upenn.cis455.storage.StorageServer;
 import test.edu.upenn.cis.stormlite.WordCounter;
 
 public class DistributedCrawlerBolt implements IRichBolt {
-	static Logger log = Logger.getLogger(WordCounter.class);
+	static Logger log = Logger.getLogger(DistributedCrawlerBolt.class);
 	
 	Fields schema = new Fields("url", "document", "toStore"); //TODO:
 	 
@@ -384,6 +384,11 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
         HashMap<String, Date> lastCrawled = DistributedCrawler.getInstance().getLastCrawled();
         HttpsURLConnection conn = null;
         
+        int c = DistributedCrawler.getInstance().getFileCount().get();
+        if( c % 1000 == 0) {
+        	System.out.println("file count: " + c);
+        }
+        
         if(url.startsWith("https://")) {
         	//System.out.println("received URL: " + url);
 			  try {
@@ -471,7 +476,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						
 						if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 							//retrieve document
-							System.out.println(url + ": Not modified");							
+							//System.out.println(url + ": Not modified");	
+							log.debug(url + ": Not modified");
 							lastCrawled.put(hostName, new Date()); //update last crawled
 							collector.emit(new Values<Object>(url, doc, "false")); //emit document but tell next bolt not to store it
 							DistributedCrawler.getInstance().incrementInflightMessages();
@@ -541,7 +547,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						/*Emit document */
 						String contentType = conn.getContentType();
 						DocVal store = new DocVal( (int)size, contentType, body, new Date());
-						System.out.println(url + ": Downloading");
+						//System.out.println(url + ": Downloading");
+						log.debug(url + ": Downloading");
 						//DistributedCrawler.getInstance().getFileCount().getAndIncrement();
 						collector.emit(new Values<Object>(url, store, "true")); //emit document and tell next bolt to store doc	
 						DistributedCrawler.getInstance().incrementInflightMessages();
@@ -662,7 +669,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				
 				if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 					//retrieve document
-					System.out.println(url + ": Not modified");					
+					//System.out.println(url + ": Not modified");	
+					log.debug(url + ": Not modified");
 					collector.emit(new Values<Object>(url, doc, "false")); //don't store
 					DistributedCrawler.getInstance().incrementInflightMessages();
 					lastCrawled.put(hostName, new Date()); //update last crawled
@@ -726,7 +734,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				/*Emit file with flag to store in DB */
 				String contentType = responseHeaders.get("content-type");
 				DocVal store = new DocVal(size, contentType, body, new Date());
-				System.out.println(url + ": Downloading");
+				//System.out.println(url + ": Downloading");
+				log.debug(url + ": Downloading");
 				collector.emit(new Values<Object>(url, store, "true"));
 				//DistributedCrawler.getInstance().getFileCount().getAndIncrement();
 				DistributedCrawler.getInstance().incrementInflightMessages();				

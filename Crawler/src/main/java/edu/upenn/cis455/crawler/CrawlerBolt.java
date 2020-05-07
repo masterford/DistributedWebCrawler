@@ -59,7 +59,7 @@ import edu.upenn.cis455.storage.StorageServer;
 import test.edu.upenn.cis.stormlite.WordCounter;
 
 public class CrawlerBolt implements IRichBolt {
-	static Logger log = Logger.getLogger(WordCounter.class);
+	static Logger log = Logger.getLogger(CrawlerBolt.class);
 	
 	Fields schema = new Fields("url", "document", "toStore"); //TODO:
 	 
@@ -379,7 +379,11 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
         }
        // System.out.println("current queue size: " + XPathCrawler.getInstance().getFrontier().getSize());
         CrawlerBolt.activeThreads.getAndIncrement(); //increment number of active threads
-        System.out.println("file count: " + XPathCrawler.getInstance().getFileCount().get());
+        int c = XPathCrawler.getInstance().getFileCount().get();
+        if( c % 1000 == 0) {
+        	System.out.println("file count: " + c);
+        }
+        
         HashMap<String, RobotsTxtInfo> robotMap = XPathCrawler.getInstance().getRobotMap();
         HashMap<String, Date> lastCrawled = XPathCrawler.getInstance().getLastCrawled();
         HttpsURLConnection conn = null;

@@ -22,6 +22,7 @@ import edu.upenn.cis.stormlite.spout.IRichSpout;
 import edu.upenn.cis.stormlite.spout.SpoutOutputCollector;
 import edu.upenn.cis.stormlite.tuple.Fields;
 import edu.upenn.cis.stormlite.tuple.Values;
+import edu.upenn.cis455.crawler.XPathCrawler;
 import edu.upenn.cis455.crawler.info.URLInfo;
 
 public class DistributedURLSpout implements IRichSpout {
@@ -63,7 +64,11 @@ public class DistributedURLSpout implements IRichSpout {
         this.context = context;      
         try {
 			reader = new BufferedReader(new FileReader(DistributedCrawler.storagePath + "/URLDisk.txt"));
-		} catch (FileNotFoundException e) {
+			int num_lines = DistributedCrawler.getInstance().getFileCount().get();
+			for (int i = 0; i < num_lines; i++) {
+				reader.readLine();  //set reader to latest line
+			}
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
       //  log.debug(getExecutorId() + " Starting URL Spout");					

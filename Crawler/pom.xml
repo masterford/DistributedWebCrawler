@@ -125,7 +125,13 @@
                             <mainClass>edu.upenn.cis455.crawler.XPathCrawler</mainClass>
                         </configuration>
                     </execution>
-
+                     <execution>
+                        <id>Upload</id>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <mainClass>edu.upenn.cis455.storage.S3Upload</mainClass>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>Frontend</id>
                         <goals><goal>java</goal></goals>
