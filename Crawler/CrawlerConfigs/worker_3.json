@@ -2,5 +2,5 @@
     "masterURL": "10.0.0.17:8000",
     "port" : "8002",
     "seed" : ["https://www.reddit.com"],
-    "args": [ "10", "20000"]
+    "args": [ "10", "100000"]
 }

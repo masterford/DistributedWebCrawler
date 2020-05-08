@@ -51,7 +51,7 @@ public class S3Upload {
 			s3client.shutdown();
 		} catch(AmazonS3Exception | IOException | ParseException e) {
 			e.printStackTrace();
-			System.exit(0);;
+			System.exit(0);
 		}					    			
 			System.exit(0);
 	}

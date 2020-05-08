@@ -2,6 +2,6 @@
     "masterURL": "10.0.0.17:8000",
     "port" : "8002",
     "seed" : [ "https://www.tutorialspoint.com/merge-sort", "https://www.britannica.com/"],
-	"args": [ "10", "20000"]
+	"args": [ "10", "100000"]
     }
 

@@ -1,4 +1,4 @@
 {
     "seed" : ["https://en.wikipedia.org/"],
-    "args": [ "10", "20000"]
+    "args": [ "10", "100000"]
 }
