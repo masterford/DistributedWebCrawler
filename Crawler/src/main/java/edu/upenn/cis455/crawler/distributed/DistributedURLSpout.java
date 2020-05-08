@@ -175,7 +175,7 @@ public class DistributedURLSpout implements IRichSpout {
 					//log.debug(getExecutorId() + " emitting " + url);
 	    	        this.collector.emit(new Values<Object>(httpsUrl.getHost(), url, "https"));
 	    	        DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
-				} catch (MalformedURLException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
 					DistributedURLSpout.activeThreads.decrementAndGet();

@@ -43,7 +43,7 @@ public class DistributedURLFilterBolt implements IRichBolt {
      */
     private OutputCollector collector;
     private static AtomicInteger activeThreads;
-    private final int MAX_URL_LENGTH = 255; //max length of a URL
+    private final int MAX_URL_LENGTH = 100; //max length of a URL
     private final int MAX_DEPTH = 5;
    // private final int FRONTIER_BUFFER_SIZE = 1;
     
