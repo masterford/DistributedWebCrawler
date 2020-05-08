@@ -513,6 +513,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						}	
 											
 						conn.disconnect();
+						
 						//conn.cl
 						conn = (HttpsURLConnection) httpsUrl.openConnection();
 						conn.setConnectTimeout(SOCKET_TIMEOUT);
@@ -562,27 +563,27 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 			} catch (MalformedURLException | DatabaseException | IndexOutOfBoundsException e) {
 				//e.printStackTrace();
 				log.debug(e.getMessage());
-				if(conn != null) {
-					conn.disconnect();
-				}				
-				DistributedCrawlerBolt.activeThreads.getAndDecrement();
-				return;
+				//if(conn != null) {
+				//	conn.disconnect();
+				//}				
+				//DistributedCrawlerBolt.activeThreads.getAndDecrement();
+				//return;
 			} catch (SocketTimeoutException | SSLException | SocketException e) {
 				//e.printStackTrace();
 				log.debug(e.getMessage());
-				if(conn != null) {
-					conn.disconnect();
-				}				
-				DistributedCrawlerBolt.activeThreads.getAndDecrement();
-				return;	
+				//if(conn != null) {
+				//	conn.disconnect();
+				//}				
+				//DistributedCrawlerBolt.activeThreads.getAndDecrement();
+				//return;	
 			} catch (IOException | NullPointerException e) {
 				//e.printStackTrace();
-				log.debug(e.getMessage());
+				log.debug(e.getMessage());												
+			} finally {
 				if(conn != null) {
 					conn.disconnect();
-				}				
+				}
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
-				return;
 			}
 			  
 		  } else {
