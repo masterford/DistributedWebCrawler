@@ -1,5 +1,4 @@
 {
-    "seed" : ["https://www.cnn.com/"
-            ],
+    "seed" : ["https://www.cnn.com/", "https://thehill.com/"],
 	"args": [ "10", "100000"]
 }

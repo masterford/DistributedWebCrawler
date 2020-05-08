@@ -1,6 +1,4 @@
 {
-    "seed" : [
-        "https://medium.com/"
-    ],
+    "seed" : ["https://medium.com/", "https://stackoverflow.com/questions"],
     "args": [ "10", "100000"]
 }
