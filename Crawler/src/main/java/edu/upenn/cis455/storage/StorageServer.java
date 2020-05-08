@@ -154,16 +154,19 @@ public class StorageServer {
 		DatabaseEntry key = new DatabaseEntry(url.getBytes());
 		
 		//begin transaction
-	//	Transaction txn = myDB.getEnv().beginTransaction(null, null);
+		Transaction txn = myDB.getEnv().beginTransaction(null, null);
 		try {
-			 if (myDB.getSeenDB().get(null, key, value, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+			 if (myDB.getSeenDB().get(txn, key, value, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 			//	System.out.println("seen: " + url);
+				 txn.commit();
 				return 1; //key exists
 			}else {
-				myDB.getSeenDB().put(null, key, value);
+				myDB.getSeenDB().put(txn, key, value);
+				txn.commit();
 				return 0;
 			}					
 		} catch (Exception e) {
+			txn.abort();
 			System.out.println("error: " );
 			e.printStackTrace();
 			return -1;
