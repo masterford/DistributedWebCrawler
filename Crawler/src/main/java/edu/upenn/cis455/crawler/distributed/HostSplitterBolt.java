@@ -15,11 +15,15 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
+
 import com.sun.tools.sjavac.Log;
 
 public class HostSplitterBolt  implements IRichBolt{
 
     Fields myFields = new Fields("url");
+    
+	static Logger log = Logger.getLogger(HostSplitterBolt.class);
 
     String executorId = UUID.randomUUID().toString();
 
@@ -113,14 +117,14 @@ public class HostSplitterBolt  implements IRichBolt{
                     if  ( sendJob(address, "POST","urlroute",url).getResponseCode() != 
                             HttpURLConnection.HTTP_OK) {
                         //throw new RuntimeException("Job definition request failed");
-                    	Log.debug("HostSpliter bolt couldn't forward URL");
+                    	log.debug("HostSpliter bolt couldn't forward URL");
                     	this.collector.emit(new Values<Object>(url));
                         DistributedCrawler.getInstance().incrementInflightMessages();
                     }
                 }               
             }
         }catch(IOException e) {
-        	Log.debug("HostSpliter bolt couldn't forward URL");
+        	log.debug("HostSpliter bolt couldn't forward URL");
         	this.collector.emit(new Values<Object>(url));
             DistributedCrawler.getInstance().incrementInflightMessages();
         } catch(Exception e){
