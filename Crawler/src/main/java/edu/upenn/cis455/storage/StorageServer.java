@@ -342,11 +342,13 @@ public class StorageServer {
 		    DatabaseEntry foundData = new DatabaseEntry();
 
 		    // Iterate from the last record to the first in the database
+		    String url;
+		    String body;
 		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
 		        OperationStatus.SUCCESS) {
 
-		        String url = new String(foundKey.getData());
-		        String body = ((DocVal) myDB.getDocValBinding().entryToObject(foundData)).getBody();
+		        url = new String(foundKey.getData());
+		        body = ((DocVal) myDB.getDocValBinding().entryToObject(foundData)).getBody();
 		        body = body.replaceAll("\n", "");
 		        body = body.replaceAll("\r", ""); //remove CLRF so that each webpage will be on a single line
 		        writer.write(url + "$$$" + body  + "\n");
