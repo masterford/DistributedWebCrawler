@@ -79,13 +79,16 @@ public class HostSplitterBolt  implements IRichBolt{
         String url = input.getStringByField("url");
         // System.out.println("Got host "+ host + " url "+ url);
        try{
-    	   synchronized(WorkerNode.receivedURLs) {
-    		   for(String receivedUrl : WorkerNode.receivedURLs) {
-        		   this.collector.emit(new Values<Object>(receivedUrl)); //emit to URLFilter
-        		   DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
-        	   }
-    		   WorkerNode.receivedURLs.clear();
-    	   }   	   
+    	   if(WorkerNode.receivedURLs.size() >= 100) {
+    		  // synchronized(WorkerNode.receivedURLs) {
+        		   for(String receivedUrl : WorkerNode.receivedURLs) {
+            		   this.collector.emit(new Values<Object>(receivedUrl)); //emit to URLFilter
+            		   DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
+            	   }
+        		   WorkerNode.receivedURLs.clear();
+        	 //  }  
+    	   }
+    	   	   
             synchronized(WorkerNode.getWorkerTable()){
                 int hostNum = Math.abs(host.hashCode() % (WorkerNode.getWorkerTable().size()));
                 if(hostNum == WorkerNode.workerIndex) {

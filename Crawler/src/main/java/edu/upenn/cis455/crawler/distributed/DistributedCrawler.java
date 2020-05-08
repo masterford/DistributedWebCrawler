@@ -248,11 +248,11 @@ public class DistributedCrawler {
       builder.setSpout(URL_SPOUT, spout, 1);
       
       // Four parallel crawler spiders, each of which gets specific urls based on hostname
-      builder.setBolt(CRAWLER_BOLT, crawlerBolt, 4).fieldsGrouping(URL_SPOUT, new Fields("host")); //group based on hostname
+      builder.setBolt(CRAWLER_BOLT, crawlerBolt, 10).fieldsGrouping(URL_SPOUT, new Fields("host")); //group based on hostname
      // builder.setBolt(CRAWLER_BOLT, crawlerBolt, 1).shuffleGrouping(URL_SPOUT); //no grouping, for testing purposes.
       
       // A single docParser bolt to store documents and extract URLS
-      builder.setBolt(DOCPARSER_BOLT, docParserBolt, 4).shuffleGrouping(CRAWLER_BOLT);
+      builder.setBolt(DOCPARSER_BOLT, docParserBolt, 10).shuffleGrouping(CRAWLER_BOLT);
       
    // A single host splitter bolt to route URLS to the correct worker
       builder.setBolt(HOST_BOLT, hostBolt, 1).shuffleGrouping(DOCPARSER_BOLT); 

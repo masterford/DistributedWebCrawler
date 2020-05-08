@@ -45,7 +45,7 @@ public class WorkerNode {
     public static int workerIndex = 0;
     public static HashSet<String> receivedURLs = new HashSet<String>(); //URLS received from host splitter
     private static String currentWorkerAddress;
-    private static boolean hasStarted = false;
+    public static boolean hasStarted = false;
 
     static WorkerMonitor monitor = new WorkerMonitor();
 
