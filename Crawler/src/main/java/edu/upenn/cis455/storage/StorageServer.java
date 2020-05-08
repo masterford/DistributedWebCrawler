@@ -371,9 +371,7 @@ public class StorageServer {
 			}
 		  //  getInstance().s3client.putObject(BUCKET_NAME, "CorpusA/corpusA.txt", new File(directory)); //TODO: replace crawA with node name
 		    
-		}
-		//int written  = XPathCrawler.getInstance().getFileCount().get();
-		//System.out.println("Crawler downloaded: " + written + " files");
+		}		
 		System.out.println("total num_files: " + count);
 		return;
 	}

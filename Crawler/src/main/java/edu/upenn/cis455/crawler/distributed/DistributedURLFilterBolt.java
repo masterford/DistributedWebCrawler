@@ -93,7 +93,7 @@ public class DistributedURLFilterBolt implements IRichBolt {
 	    		return;
 			}
 			String hostName = urlObject.getHost();
-			if(DistributedCrawler.bannedHosts.contains(hostName) || ( (hostName.contains("wiki") || hostName.contains("wiktionary")) && !hostName.startsWith("en"))) { //filter out banned hosts
+			if(DistributedCrawler.bannedHosts.contains(hostName) || ( (hostName.contains("wiki") || hostName.contains("wiktionary") || hostName.contains("stackoverflow")) && !hostName.startsWith("en"))) { //filter out banned hosts
 				DistributedURLFilterBolt.activeThreads.getAndDecrement();
 				return;				
 			}

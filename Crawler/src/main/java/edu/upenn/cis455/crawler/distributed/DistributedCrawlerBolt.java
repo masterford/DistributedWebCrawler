@@ -152,6 +152,8 @@ public class DistributedCrawlerBolt implements IRichBolt {
 				break;
 			}
 		}
+		reader.close();
+		inputStream.close();
 		return requestBuilder.toString();
   }
   
@@ -171,6 +173,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 		 requestBuilder.append((char) b);
 		 count++;
 	}
+	reader.close();
+	inputStream.close();
 	return requestBuilder.toString();
 }
   
@@ -284,18 +288,20 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 		}
 		out.write(CLRF.getBytes());		
 		out.flush();	
+		out.close();
   }
   
   private void sendMonitoring(String url) throws IOException {
 	  byte[] data = ("ransford;" + url).getBytes();
 	  DatagramPacket packet = new DatagramPacket(data, data.length, hostMonitor, 10455);
 	  s.send(packet);
+	  
   }
   
   /*Checks whether the document is a valid html or xml  */
   private boolean isValidType(String type) {
-	  return (type.contains("text/html") || type.contains("text/xml") || type.endsWith(".html") || type.endsWith(".xml") || type.equals("application/xml"));
-	 // return (type.contains("text/html") || type.endsWith(".html"));
+	  //return (type.contains("text/html") || type.contains("text/xml") || type.endsWith(".html") || type.endsWith(".xml") || type.equals("application/xml"));
+	  return (type.contains("text/html") || type.endsWith(".html"));
   }
   
   private void parseRobotTxt(BufferedReader reader, String host) {
@@ -585,7 +591,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				}
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
 			}
-			  
+			
 		  } else {
 			  //HTTP URLS
 			  URLInfo urlInfo = new URLInfo(url);
