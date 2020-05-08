@@ -93,7 +93,7 @@ public class HostSplitterBolt  implements IRichBolt{
     	   	   
             synchronized(WorkerNode.getWorkerTable()){
                 int hostNum = Math.abs(host.hashCode() % (WorkerNode.getWorkerTable().size()));
-                if(hostNum == WorkerNode.workerIndex) {
+                if(hostNum == WorkerNode.workerIndex) {               	
                      this.collector.emit(new Values<Object>(url));
                      DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
                 }else {

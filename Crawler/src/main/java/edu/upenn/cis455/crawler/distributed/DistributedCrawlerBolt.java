@@ -473,7 +473,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						//System.out.println("head type is: " + type + " url: " + url);
 						int statusXX = responseCode / 100;
 						DistributedCrawler.getInstance().getLinksCrawled().getAndIncrement(); //increment links crawled
-						//System.out.println("response " + responseCode);
+						//System.out.println(" head response " + responseCode);
 						if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 							//retrieve document
 							//System.out.println(url + ": Not modified");	

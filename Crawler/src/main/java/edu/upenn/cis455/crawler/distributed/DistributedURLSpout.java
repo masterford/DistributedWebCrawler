@@ -138,6 +138,7 @@ public class DistributedURLSpout implements IRichSpout {
     	} else {
     		DistributedURLSpout.activeThreads.getAndIncrement(); //isIdle is now 1, hence this thread is not idle
         	String url = DistributedCrawler.getInstance().getFrontier().dequeue();
+        	//System.out.println("url is : " + url);
         	if(url == null) {
         		DistributedURLSpout.activeThreads.decrementAndGet(); 
         		return;

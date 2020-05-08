@@ -262,7 +262,7 @@ public class WorkerNode {
             	System.out.println("seed: " + url);
                 if(frontier == null){
                 	DistributedCrawler.getInstance().initFrontier(url);
-                    //frontier = new URLFrontier(iterator.next());
+                    frontier = DistributedCrawler.getInstance().getFrontier();
                 }else{
                 	DistributedCrawler.getInstance().getFrontier().enqueue(url);
                    // frontier.enqueue(iterator.next());
