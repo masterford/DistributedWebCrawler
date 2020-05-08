@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,6 +21,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockConflictException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
@@ -155,6 +157,7 @@ public class StorageServer {
 		
 		//begin transaction
 		Transaction txn = myDB.getEnv().beginTransaction(null, null);
+		txn.setLockTimeout(2, TimeUnit.SECONDS);
 		try {
 			 if (myDB.getSeenDB().get(txn, key, value, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 			//	System.out.println("seen: " + url);
@@ -165,6 +168,9 @@ public class StorageServer {
 				txn.commit();
 				return 0;
 			}					
+		} catch(LockConflictException e) {
+			return -1;
+			
 		} catch (Exception e) {
 			txn.abort();
 			System.out.println("error: " );
