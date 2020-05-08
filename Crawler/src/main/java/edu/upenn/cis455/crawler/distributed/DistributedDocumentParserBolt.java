@@ -151,7 +151,7 @@ public class DistributedDocumentParserBolt implements IRichBolt{
 			urlObject = new URL(url);
 			host = urlObject.getHost();
 		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+			//e1.printStackTrace();
 			DistributedDocumentParserBolt.activeThreads.decrementAndGet();
 			return;
 		}
@@ -159,8 +159,8 @@ public class DistributedDocumentParserBolt implements IRichBolt{
     	DocVal doc = (DocVal) input.getObjectByField("document");
     	
     	if(doc == null || doc.getBody() == null) {
-    		DistributedCrawler.getInstance().incrementInflightMessages();
-        	collector.emit(new Values<Object>(url, host));
+    		//DistributedCrawler.getInstance().incrementInflightMessages();
+        	//collector.emit(new Values<Object>(url, host));
     		DistributedDocumentParserBolt.activeThreads.getAndDecrement();
     		return;
     	}
@@ -192,7 +192,7 @@ public class DistributedDocumentParserBolt implements IRichBolt{
     			System.out.println("language: " + identifier.getLanguage() + "url: " + url);
     			DistributedDocumentParserBolt.activeThreads.getAndDecrement();
     			return;
-    		}       	
+    		}      	
     		jdoc.setBaseUri(url);   		
     		String language = jdoc.attr("lang");
     		if(!language.isEmpty() && !language.equalsIgnoreCase("en")) { //not english    			

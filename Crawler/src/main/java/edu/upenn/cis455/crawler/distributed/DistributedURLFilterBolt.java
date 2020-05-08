@@ -43,7 +43,7 @@ public class DistributedURLFilterBolt implements IRichBolt {
      */
     private OutputCollector collector;
     private static AtomicInteger activeThreads;
-    private final int MAX_URL_LENGTH = 1000; //max length of a URL
+    private final int MAX_URL_LENGTH = 255; //max length of a URL
     private final int MAX_DEPTH = 5;
    // private final int FRONTIER_BUFFER_SIZE = 1;
     
@@ -93,7 +93,7 @@ public class DistributedURLFilterBolt implements IRichBolt {
 	    		return;
 			}
 			String hostName = urlObject.getHost();
-			if(DistributedCrawler.bannedHosts.contains(hostName) || (hostName.contains("wikipedia.org") && !hostName.startsWith("en"))) { //filter out banned hosts
+			if(DistributedCrawler.bannedHosts.contains(hostName) || ( (hostName.contains("wiki") || hostName.contains("wiktionary")) && !hostName.startsWith("en"))) { //filter out banned hosts
 				DistributedURLFilterBolt.activeThreads.getAndDecrement();
 				return;				
 			}

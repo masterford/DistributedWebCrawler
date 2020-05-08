@@ -513,6 +513,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						}	
 											
 						conn.disconnect();
+						//conn.cl
 						conn = (HttpsURLConnection) httpsUrl.openConnection();
 						conn.setConnectTimeout(SOCKET_TIMEOUT);
 						conn.setReadTimeout(READ_TIMEOUT);
@@ -559,21 +560,24 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 					  /*<---------------------*/				
 					
 			} catch (MalformedURLException | DatabaseException | IndexOutOfBoundsException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				log.debug(e.getMessage());
 				if(conn != null) {
 					conn.disconnect();
 				}				
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
 				return;
-			} catch (SocketTimeoutException | SSLException e) {
-				e.printStackTrace();
+			} catch (SocketTimeoutException | SSLException | SocketException e) {
+				//e.printStackTrace();
+				log.debug(e.getMessage());
 				if(conn != null) {
 					conn.disconnect();
 				}				
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
 				return;	
 			} catch (IOException | NullPointerException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				log.debug(e.getMessage());
 				if(conn != null) {
 					conn.disconnect();
 				}				
@@ -759,7 +763,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 			  }
 			  catch (IOException | NullPointerException | DatabaseException | IndexOutOfBoundsException e) {
 				  System.out.print("exception caught: ");
-				e.printStackTrace();
+				//e.printStackTrace();
 				try {
 					if(socket == null) {
 						DistributedCrawlerBolt.activeThreads.getAndDecrement();
