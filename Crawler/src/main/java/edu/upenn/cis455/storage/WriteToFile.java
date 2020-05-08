@@ -8,7 +8,7 @@ public class WriteToFile {
 			String directory = System.getProperty("user.dir")+ "/DistributedStorage/" + args[0];
 			StorageServer.getInstance().init(directory);
 			int index = Integer.parseInt(args[0].split("_")[1]);
-			StorageServer.getInstance().writetoFile("corpus" + alphabet[index] + "_0");
+			StorageServer.getInstance().writetoFile(directory + "/corpus" + alphabet[index] + "_0");
 		}catch (NumberFormatException e) {
 			e.printStackTrace();
 			System.exit(0);
