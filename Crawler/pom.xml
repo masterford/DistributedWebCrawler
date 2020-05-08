@@ -133,6 +133,13 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>Write</id>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <mainClass>edu.upenn.cis455.storage.WriteToFile</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>Frontend</id>
                         <goals><goal>java</goal></goals>
                         <configuration>
