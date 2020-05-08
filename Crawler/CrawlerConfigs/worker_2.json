@@ -1,8 +1,7 @@
 {
     "masterURL": "10.0.0.17:8000",
     "port" : "8002",
-    "seed" : [ "https://www.tutorialspoint.com/merge-sort"
-        ],
+    "seed" : [ "https://www.tutorialspoint.com/merge-sort", "https://news.yahoo.com/" ],
 	"args": [ "10", "20000"]
     }
 

@@ -126,7 +126,7 @@ public class DistributedURLSpout implements IRichSpout {
 			}			
     	}
     	
-    	if(DistributedCrawler.getInstance().getFrontier().isEmpty() || fileCount >= DistributedCrawler.getInstance().getMaxFileNum() || DistributedCrawler.getInstance().getShutdown()) { // Handle Shutdown
+    	if((DistributedCrawler.getInstance().getFrontier().isEmpty() && WorkerNode.receivedURLs.isEmpty())|| fileCount >= DistributedCrawler.getInstance().getMaxFileNum() || DistributedCrawler.getInstance().getShutdown()) { // Handle Shutdown
     		if(DistributedURLSpout.getActiveThreads() <= 0 && DistributedCrawlerBolt.getActiveThreads() <= 0 && DistributedDocumentParserBolt.getActiveThreads() <= 0 && DistributedURLFilterBolt.getActiveThreads() <= 0 && 
     			HostSplitterBolt.getActiveThreads() <= 0 && DistributedCrawler.getInstance().getInFlightMessages() <= 0) {
     			DistributedCrawler.getInstance().shutdown(); //call shutdown    			
