@@ -3,6 +3,6 @@
     "port" : "8002",
     "seed" : [ "https://www.tutorialspoint.com/"
         ],
-	"args": [ "10", "100"]
+	"args": [ "10", "20000"]
     }
 
