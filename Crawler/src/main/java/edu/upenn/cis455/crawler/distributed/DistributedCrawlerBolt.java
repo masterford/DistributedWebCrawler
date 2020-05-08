@@ -437,20 +437,22 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						if(robotInfo.crawlContainAgent(USER_AGENT) || (robotInfo.getCrawlDelay("*") != -1) ) {								
 							if(lastCrawled.containsKey(hostName)) {
 								int delay = robotInfo.crawlContainAgent(USER_AGENT) ? robotInfo.getCrawlDelay(USER_AGENT) : robotInfo.getCrawlDelay("*");
-								if(delay == -1) {
-									delay = 1; //default crawl delay
-								}
-								Date previous = lastCrawled.get(hostName);
-								Date now = new Date();
-								if(now.getTime() - previous.getTime() < (delay * 1000)) { //checks if the last crawled time was longer than the crawl delay
-									//DistributedCrawler.getInstance().getFrontier().enqueue(url); //re add back to queue and don't crawl
-									//collector.emit(new Values<Object>(url, null, "false")); //emit document but tell next bolt not to store it
-									//System.out.println("delay: " + url);
-									//DistributedCrawler.getInstance().incrementInflightMessages();
-									DistributedCrawler.getInstance().getFrontier().enqueue(url); //re add back to queue
-									DistributedCrawlerBolt.activeThreads.getAndDecrement();
-									return;
-								}								
+								//if(delay == -1) {
+								//	delay = 1; //default crawl delay
+								//}
+								if(delay != -1) {
+									Date previous = lastCrawled.get(hostName);
+									Date now = new Date();
+									if(now.getTime() - previous.getTime() < (delay * 1000)) { //checks if the last crawled time was longer than the crawl delay
+										//DistributedCrawler.getInstance().getFrontier().enqueue(url); //re add back to queue and don't crawl
+										//collector.emit(new Values<Object>(url, null, "false")); //emit document but tell next bolt not to store it
+										//System.out.println("delay: " + url);
+										//DistributedCrawler.getInstance().incrementInflightMessages();
+										DistributedCrawler.getInstance().getFrontier().enqueue(url); //re add back to queue
+										DistributedCrawlerBolt.activeThreads.getAndDecrement();
+										return;
+									}	
+								}															
 							}							
 						}
 							
