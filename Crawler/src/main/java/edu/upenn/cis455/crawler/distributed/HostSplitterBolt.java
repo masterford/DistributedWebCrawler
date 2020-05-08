@@ -48,6 +48,7 @@ public class HostSplitterBolt  implements IRichBolt{
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod(reqType);
+        conn.setConnectTimeout(3000);
         
         if (reqType.equals("POST")) {
             conn.setRequestProperty("Content-Type", "application/json");
