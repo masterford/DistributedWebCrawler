@@ -1,0 +1,6 @@
+{
+    "seed" : [
+        "https://medium.com/"
+    ],
+    "args": [ "10", "20000"]
+}
