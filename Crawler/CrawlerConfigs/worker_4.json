@@ -1,4 +1,4 @@
 {
-    "seed" : ["https://www.medium.com/"],
+    "seed" : ["https://en.wikipedia.org/"],
     "args": [ "10", "20000"]
 }
