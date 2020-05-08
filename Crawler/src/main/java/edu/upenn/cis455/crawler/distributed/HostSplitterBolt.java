@@ -15,6 +15,8 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sun.tools.sjavac.Log;
+
 public class HostSplitterBolt  implements IRichBolt{
 
     Fields myFields = new Fields("url");
@@ -80,13 +82,13 @@ public class HostSplitterBolt  implements IRichBolt{
         // System.out.println("Got host "+ host + " url "+ url);
        try{
     	   if(WorkerNode.receivedURLs.size() >= 100) {
-    		  // synchronized(WorkerNode.receivedURLs) {
+    		   synchronized(WorkerNode.receivedURLs) {
         		   for(String receivedUrl : WorkerNode.receivedURLs) {
             		   this.collector.emit(new Values<Object>(receivedUrl)); //emit to URLFilter
             		   DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
             	   }
         		   WorkerNode.receivedURLs.clear();
-        	 //  }  
+        	   }  
     	   }
     	   	   
             synchronized(WorkerNode.getWorkerTable()){
@@ -110,7 +112,10 @@ public class HostSplitterBolt  implements IRichBolt{
                   //  }else{
                     if  ( sendJob(address, "POST","urlroute",url).getResponseCode() != 
                             HttpURLConnection.HTTP_OK) {
-                        throw new RuntimeException("Job definition request failed");
+                        //throw new RuntimeException("Job definition request failed");
+                    	Log.debug("HostSpliter bolt couldn't forward URL");
+                    	this.collector.emit(new Values<Object>(url));
+                        DistributedCrawler.getInstance().incrementInflightMessages();
                     }
                 }               
             }
