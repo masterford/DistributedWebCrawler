@@ -31,28 +31,39 @@ public class WorkerMonitor  extends Thread{
     }
 
     public void run(){
-
+    	HttpURLConnection conn = null;
         while(!WorkerNode.isShutdown()){
+        	//HttpURLConnection conn;
             try{
 
                 // System.out.println("Getting url "+constructGetRequest());
                 
                 URL url = new URL(constructGetRequest());
                 
-                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                conn = (HttpURLConnection)url.openConnection();
                 conn.setDoOutput(true);
                 conn.setRequestMethod("GET");
                 conn.getResponseCode();
                // System.out.println("Sendin status " + conn.getResponseCode());
 
                 //Sleep for 10 seconds
+                conn.disconnect();
                 Thread.sleep(10000);
 
             }catch(MalformedURLException e ){
                 e.printStackTrace();
+                continue;
             }catch(Exception e){
                 //Do Nothing. Basically keep trying till killed
+            	if(conn != null) {
+            		conn.disconnect();
+            	}
+            	continue;
             	
+            } finally {
+            	if(conn != null) {
+            		conn.disconnect();
+            	}
             }
         }
 
