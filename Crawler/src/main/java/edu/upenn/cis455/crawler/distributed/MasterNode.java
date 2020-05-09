@@ -267,11 +267,15 @@ public class MasterNode {
                     workerInfo.put(workerEntry, newEntry);
                     regWorkers++;
                 }else{
-                    workerInfo.get(workerEntry).setLastSeen(new Date());
-                    workerInfo.get(workerEntry).setStatus(status);
-                    workerInfo.get(workerEntry).setCrawlLinks(linksCrawled);
-                    workerInfo.get(workerEntry).setCrawlDownloaded(linksDownloaded);
-                    workerInfo.get(workerEntry).setCrawlRate(rate);
+                	if(status.equals("idle")) { 
+                		regWorkers++; //restart node
+                	}else {
+                		workerInfo.get(workerEntry).setLastSeen(new Date());
+                        workerInfo.get(workerEntry).setStatus(status);
+                        workerInfo.get(workerEntry).setCrawlLinks(linksCrawled);
+                        workerInfo.get(workerEntry).setCrawlDownloaded(linksDownloaded);
+                        workerInfo.get(workerEntry).setCrawlRate(rate);
+                	}                   
                 }
 
                 if(regWorkers == numWorkers){
