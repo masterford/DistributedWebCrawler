@@ -2,6 +2,6 @@
     "masterURL": "10.0.0.17:8000",
     "port" : "8002",
     "seed" : ["https://www.reddit.com", "https://www.wsj.com/", "https://www.cis.upenn.edu/"],
-	"args": [ "10", "150000"]
+	"args": [ "10", "300000"]
     }
 

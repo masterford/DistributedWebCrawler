@@ -1,4 +1,4 @@
 {
     "seed" : ["https://www.bbc.com/", "https://www.w3schools.com/", "https://www.visitphilly.com/"],
-    "args": [ "10", "150000"]
+    "args": [ "10", "300000"]
 }

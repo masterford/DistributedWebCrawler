@@ -1,6 +1,6 @@
 {
     "masterURL": "10.0.0.17:8000",
     "port" : "8002",
-    "seed" : ["https://thehill.com/", "https://www.cnet.com/"],
-    "args": [ "10", "150000"]
+    "seed" : ["https://thehill.com/", "https://www.cnet.com/", "https://www.amazon.com/"],
+    "args": [ "10", "300000"]
 }
