@@ -427,6 +427,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 							//System.out.println("robots not found");
 							robotMap.put(robot.getHost(), new RobotsTxtInfo()); //no robots.txt found
 						}
+						conn.getInputStream().close();
 						conn.disconnect();
 					}				
 					/*-------------------->*/
@@ -474,7 +475,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						}	
 						sendMonitoring(url);
 						/*Check Head Response  */
-						int responseCode = conn.getResponseCode();
+						int responseCode = conn.getResponseCode();					
 						String type = conn.getContentType();
 						//System.out.println("head type is: " + type + " url: " + url);
 						int statusXX = responseCode / 100;
@@ -550,6 +551,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 								encoding = "UTF-8"; //default
 							}
 							body = IOUtils.toString(conn.getInputStream(), encoding);
+							conn.getInputStream().close();
 						} else {
 							body = parseHTTPSBody(size, conn.getInputStream());
 						}
@@ -576,6 +578,9 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				//return;
 			} catch (SocketTimeoutException | SSLException | SocketException e) {
 				//e.printStackTrace();
+				if(e.getMessage().contains("Too many open files")) {
+					e.printStackTrace();
+				}
 				log.debug(e.getMessage());
 				//if(conn != null) {
 				//	conn.disconnect();
@@ -636,6 +641,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				/*Check if we can crawl file path */
 				RobotsTxtInfo robotInfo = robotMap.get(urlInfo.getHostName());
 				if(!canCrawl(robotInfo, filePath)) {
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return; //skip
@@ -651,6 +657,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 							//DistributedCrawler.getInstance().getFrontier().enqueue(url); //re add back to queue and don't crawl
 							collector.emit(new Values<Object>(url, null, "false")); //emit document but tell next bolt not to store it
 							DistributedCrawler.getInstance().incrementInflightMessages();
+							out.close();
 							socket.close();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
@@ -672,6 +679,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				HashMap<String, String> responseHeaders = new HashMap<String, String>();
 				String body = parseResponse(responseHeaders, socket.getInputStream(), 0);
 				if(responseHeaders.isEmpty()) {
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
@@ -687,6 +695,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 					collector.emit(new Values<Object>(url, doc, "false")); //don't store
 					DistributedCrawler.getInstance().incrementInflightMessages();
 					lastCrawled.put(hostName, new Date()); //update last crawled
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
@@ -707,23 +716,27 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						collector.emit(new Values<Object>(newUrl, null, "false")); //emit document but tell next bolt not to store it
 						DistributedCrawler.getInstance().incrementInflightMessages();
 					}
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return; //continue run
 				}
 				if(statusXX == 4 || statusXX == 5) {
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
 				}
 				
 				if(responseHeaders.get("content-length") == null){
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
 				}
 				
 				if(type == null ||  !isValidType(type) ) {
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
@@ -731,6 +744,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				
 				int size = Integer.parseInt(responseHeaders.get("content-length"));
 				if( size > DistributedCrawler.getInstance().getmaxDocSize()) {
+					out.close();
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
@@ -751,7 +765,8 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				log.debug(url + ": Downloading");
 				collector.emit(new Values<Object>(url, store, "true"));
 				//DistributedCrawler.getInstance().getFileCount().getAndIncrement();
-				DistributedCrawler.getInstance().incrementInflightMessages();				
+				DistributedCrawler.getInstance().incrementInflightMessages();
+				out.close();
 				socket.close();	
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
 			
@@ -775,7 +790,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 					if(socket == null) {
 						DistributedCrawlerBolt.activeThreads.getAndDecrement();
 						return;
-					}
+					}				
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
 					return;
