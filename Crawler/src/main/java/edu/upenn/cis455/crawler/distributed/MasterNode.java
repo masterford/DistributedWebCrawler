@@ -25,6 +25,7 @@ public class MasterNode {
     // public static HashSet<String> workerAddress = new HashSet<String>();
 
     public static HashMap<String, WorkerStatus> workerInfo = new HashMap<String, WorkerStatus>();
+    public static HashMap<String, Date> lastSeen = new HashMap<String, Date>();
     private static ObjectMapper mapper = new ObjectMapper();
     public static int myPort;
     public static String workerTable;
@@ -267,7 +268,9 @@ public class MasterNode {
                     workerInfo.put(workerEntry, newEntry);
                     regWorkers++;
                 }else{
-                	if(status.equals("idle")) { 
+                	if(status.equals("idle")) {
+                		//workerInfo.remove(workerEntry);
+                		startedWorkers.remove(workerEntry);
                 		regWorkers++; //restart node
                 	}else {
                 		workerInfo.get(workerEntry).setLastSeen(new Date());
@@ -277,8 +280,33 @@ public class MasterNode {
                         workerInfo.get(workerEntry).setCrawlRate(rate);
                 	}                   
                 }
-
+                
+                Date now = new Date();
+                HashSet<String> remove = new HashSet<String>();
+                for(String worker : workerInfo.keySet()){ //check if workers alive
+                	WorkerStatus entry = workerInfo.get(worker);
+                	Date lastSeen = entry.getLastSeen();
+                	if(now.getTime() - lastSeen.getTime() >= 60000) { //hasn't been seen in a minute
+                		remove.add(worker);
+                	}
+                }
+                if(!remove.isEmpty()) { //redo table
+                	
+                	for (String workers : remove) {
+                    	workerInfo.remove(workers);
+                    	
+                    }
+                	workerTable = constructWorkerTable();
+                	for(String worker : workerInfo.keySet()){
+                		WorkerStatus value = workerInfo.get(worker);
+                        String workerRoute = "workertable?index="+value.getIndex();    
+                        System.out.println((worker));
+                        sendWorkerTableToWorker(worker, workerRoute);
+                	}               	 
+                }
+                                
                 if(regWorkers == numWorkers){
+                	
                     workerTable = constructWorkerTable();
                 }
                     
