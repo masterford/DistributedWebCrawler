@@ -1,4 +1,4 @@
 {
-    "seed" : ["https://www.reddit.com"],
-    "args": [ "10", "100000"]
+    "seed" : ["https://www.britannica.com/", "https://readthedocs.org/"],
+    "args": [ "10", "150000"]
 }

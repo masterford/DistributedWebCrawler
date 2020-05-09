@@ -1,4 +1,4 @@
 {
-    "seed" : ["https://thehill.com/", "https://en.wikipedia.org/"],
-	"args": [ "10", "100000"]
+    "seed" : ["https://en.wikipedia.org/", "https://www.ebay.com/", "https://medium.com/"],
+	"args": [ "10", "150000"]
 }

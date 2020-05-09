@@ -1,4 +1,4 @@
 {
-    "seed" : ["https://stackoverflow.com/questions", "https://www.tutorialspoint.com/merge-sort"],
-    "args": [ "10", "100000"]
+    "seed" : ["https://www.bbc.com/", "https://www.w3schools.com/", "https://www.visitphilly.com/"],
+    "args": [ "10", "150000"]
 }
