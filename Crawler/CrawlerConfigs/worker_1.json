@@ -1,4 +1,7 @@
 {
-    "seed" : ["https://www.cnn.com/", "https://thehill.com/"],
+    "masterURL": "10.0.0.17:8000",
+    "port" : "8002",
+    "seed" : ["https://www.bbc.com/"],
 	"args": [ "10", "100000"]
-}
+    }
+
