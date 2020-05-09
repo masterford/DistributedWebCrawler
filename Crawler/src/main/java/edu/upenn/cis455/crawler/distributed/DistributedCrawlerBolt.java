@@ -578,7 +578,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				//return;
 			} catch (SocketTimeoutException | SSLException | SocketException e) {
 				//e.printStackTrace();
-				if(e.getMessage().contains("Too many open files")) {
+				if(e.getMessage().contains("open files")) {
 					e.printStackTrace();
 				}
 				log.debug(e.getMessage());

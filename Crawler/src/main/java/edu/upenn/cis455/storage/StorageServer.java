@@ -169,6 +169,7 @@ public class StorageServer {
 				return 0;
 			}					
 		} catch(LockConflictException e) {
+			txn.commit();
 			return -1;
 			
 		} catch (Exception e) {

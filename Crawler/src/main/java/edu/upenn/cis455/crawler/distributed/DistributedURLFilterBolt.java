@@ -103,7 +103,11 @@ public class DistributedURLFilterBolt implements IRichBolt {
 		}
     	//System.out.println(getActiveThreads());
     	//HashSet<String> seenURLs = (HashSet<String>) DistributedCrawler.getInstance().getSeenURLs();
-    	if(DistributedCrawler.getInstance().getDB().addURL(url) == 0) { //if not 0 it means this URL is already seen
+    	int result = 0;
+    	synchronized(DistributedCrawler.getInstance().getDB()) {
+    		result = DistributedCrawler.getInstance().getDB().addURL(url);
+    	}
+    	if(result == 0) { //if not 0 it means this URL is already seen
     		//seenURLs.add(url);
     		//if(DistributedCrawler.getInstance().getFrontier().getSize() >= DistributedCrawler.FRONTIER_BUFFER_SIZE) { //write to file
 			try {
