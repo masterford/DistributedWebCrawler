@@ -294,6 +294,7 @@ public class MasterNode {
                 	
                 	for (String workers : remove) {
                     	workerInfo.remove(workers);
+                    	System.out.println("worker: " + workers + " has left");
                     	
                     }
                 	workerTable = constructWorkerTable();
@@ -311,7 +312,7 @@ public class MasterNode {
                 }
                     
                 if(regWorkers >= numWorkers){
-                    
+                	workerTable = constructWorkerTable();
                     for(String worker : workerInfo.keySet()){
                         /* Unless the worker has sent an acknowledgment that it has recieved the worker table,
                         keep sending the workerTable and the command to start job
