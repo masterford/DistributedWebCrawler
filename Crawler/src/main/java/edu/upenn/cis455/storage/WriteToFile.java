@@ -10,7 +10,7 @@ public class WriteToFile {
 			String directory = System.getProperty("user.dir")+ "/DistributedStorage/" + args[0];
 			StorageServer.getInstance().init(directory);
 			int index = Integer.parseInt(args[0].split("_")[1]);
-			File dir = new File(directory + "upload");
+			File dir = new File(directory + "/upload");
 			dir.mkdir();
 			StorageServer.getInstance().writetoFile(directory + "/upload/corpus" + alphabet[index]);
 		}catch (NumberFormatException e) {
