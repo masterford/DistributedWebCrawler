@@ -79,10 +79,9 @@ public class DistributedCrawler {
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
 		} 
-		
-		storagePath = System.getProperty("user.dir")+"/DistributedStorage/Worker_"+String.valueOf(WorkerNode.workerIndex);
-		
-		
+				
+		storagePath = System.getProperty("user.dir")+"/DistributedStorage";
+			
 		File file = new File(storagePath);
 		
 		if(!file.exists() && file.mkdir()) {
@@ -114,6 +113,11 @@ public class DistributedCrawler {
   
   public void populateBannedHosts() {
 	DistributedCrawler.bannedHosts.add("xxx.com"); //TODO: populate
+	DistributedCrawler.bannedHosts.add("facebook.com");
+	DistributedCrawler.bannedHosts.add("t.co"); 
+	DistributedCrawler.bannedHosts.add("twitter.com"); 
+	DistributedCrawler.bannedHosts.add("instagram.com"); 
+	DistributedCrawler.bannedHosts.add("github.com"); 
   }
   
   public int getMaxFileNum() {
@@ -190,8 +194,12 @@ public class DistributedCrawler {
 	  System.out.println("Set shutdown flag to: " + getInstance().getShutdown());
 	  if(DistributedCrawler.getInstance().diskFile != null) {
     	  DistributedCrawler.getInstance().diskFile.delete(); //delete URLDIsk File
-      }  
-	  DistributedCrawler.getInstance().getDB().writetoFile(storagePath + "/corpus" + alphabetIndex[WorkerNode.workerIndex] + "_0.txt"); 
+      }
+	  
+	  int index = WorkerNode.workerIndex;
+	  File dir = new File(storagePath + "/upload");
+	  dir.mkdir();
+	  DistributedCrawler.getInstance().getDB().writetoFile(storagePath + "/upload/corpus" + alphabetIndex[index]); 
   }
   
   public boolean getShutdown() {

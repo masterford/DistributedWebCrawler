@@ -25,7 +25,7 @@ public class S3Upload {
 	public static void main(String[] args) {
 		/* initialize s3 client */
 		String BUCKET_NAME = "cis455-group13-crawldata";	
-		String directory =  System.getProperty("user.dir")+ "/DistributedStorage/" + args[0] + "/upload/"; 
+		String directory =  System.getProperty("user.dir")+ "/DistributedStorage/upload"; 
 		JSONParser parser = new JSONParser();
 		try {
 			String file = System.getProperty("user.dir")+"/CrawlerConfigs/s3_config.json";
@@ -49,13 +49,18 @@ public class S3Upload {
 		
             File dir = new File(directory);
             File[] directoryListing = dir.listFiles();
-            if (directoryListing != null) {
-              for (File content : directoryListing) {
-            	  s3client.putObject(BUCKET_NAME, "corpus5/"+content.getName(), content); 
-              }
-            }
+            if (directoryListing != null) {            	
+        		for (File content : directoryListing) {
+	            	try {
+	                  	 s3client.putObject(BUCKET_NAME, "corpus6/"+content.getName(), content); 
+	                  	 System.out.println("uploaded: " + content.getName());
+	            	}catch(AmazonS3Exception e) {
+	            		continue;
+	            	}              
+        		}
 			s3client.shutdown();
-		} catch(AmazonS3Exception | IOException | ParseException e) {
+            }
+		}catch(AmazonS3Exception | IOException | ParseException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}					    			

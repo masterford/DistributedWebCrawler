@@ -387,12 +387,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
         HashMap<String, RobotsTxtInfo> robotMap = DistributedCrawler.getInstance().getRobotMap();
         HashMap<String, Date> lastCrawled = DistributedCrawler.getInstance().getLastCrawled();
         HttpsURLConnection conn = null;
-        
-        int c = DistributedCrawler.getInstance().getFileCount().get();
-        if( c != 0 && c % 1000 == 0) {
-        	System.out.println("file count: " + c);
-        }
-        
+                        
         if(url.startsWith("https://")) {
         	//System.out.println("received URL: " + url);
 			  try {
@@ -436,7 +431,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						/*Check if we can crawl file path */
 						RobotsTxtInfo robotInfo = robotMap.get(hostName);
 						if(!canCrawl(robotInfo, filePath)) {
-							System.out.println("cant crawl: " + url);
+							log.debug("cant crawl: " + url);
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();							
 							return;  //: exit
 						}

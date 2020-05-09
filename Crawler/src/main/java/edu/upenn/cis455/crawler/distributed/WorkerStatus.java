@@ -5,10 +5,14 @@ public class WorkerStatus {
 
     String status;
     Date lastSeenTime;
+    Date started;
+    Date finished;
+    double duration = 0.0;
     String currentCrawl;
     int linksCrawled = 0;
     int linksDownloaded = 0;
-    double crawlRate =0;
+    double maxCrawlRate =0;
+    double avgCrawlRate =0;
     int workerIndex=0;
 
     public WorkerStatus(int index){
@@ -34,12 +38,35 @@ public class WorkerStatus {
     public Date getLastSeen(){
         return lastSeenTime;
     }
+    public void setStarted(Date time){
+        started = time;
+    }
+
+    public Date getStarted(){
+        return started;
+    }
+    
+    public void setFinished(Date time){
+        started = time;
+    }
+
+    public Date getFinished(){
+        return finished;
+    }
 
     public int getCrawlLinks(){
         return linksCrawled;
     }
     public void setCrawlLinks(int links){
         linksCrawled = links;
+    }
+    
+    public void setDuration(Date now) {
+    	duration = (now.getTime() - started.getTime()) / (1000 * 60);
+    }
+    
+    public double getDuration() {
+    	return duration;
     }
     
     public int getCrawlDownloaded(){
@@ -50,14 +77,20 @@ public class WorkerStatus {
         linksDownloaded = sum;
     }
 
-    public double getCrawlRate(){
-        return crawlRate;
+    public double getMaxCrawlRate(){
+        return maxCrawlRate;
     }
-
-    public void setCrawlRate(double rate){
-        crawlRate = rate;
+    
+    public void setMaxCrawlRate(double rate){
+         maxCrawlRate = rate;
     }
-
-
+    
+    public double getAvgCrawlRate(){
+        return avgCrawlRate;
+    }
+    
+    public void setAvgCrawlRate(double rate){
+         avgCrawlRate = rate;
+    }
 
 }

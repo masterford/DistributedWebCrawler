@@ -32,6 +32,8 @@ public class MasterNode {
     
     // Data structure to hold the workers which have already started
     public static HashSet<String> startedWorkers = new HashSet<String>();
+    public static HashSet<String> finishedWorkers = new HashSet<String>();
+    
     private static int curWorkerIndex =0 ;
 
     private static int regWorkers = 0;
@@ -103,7 +105,9 @@ public class MasterNode {
                     "<th>Status</th>"+
                     "<th>Links Crawled</th>" + 
                     "<th>Links Downloaded</th>" + 
-                    "<th>Rate of Crawl (links/sec)</th>"+
+                    "<th>Avg Crawl Rate (links/sec)</th>"+
+                    "<th>Max Crawl Rate (links/sec)</th>"+
+                    "<th>Crawl Duration (minutes)</th>"+
                     "<th>ShutDown</th></tr>";
 
         for (Map.Entry mapElement : workerInfo.entrySet()){
@@ -114,7 +118,9 @@ public class MasterNode {
                             "<td>"+info.getStatus()+"</td>"+
                             "<td>"+info.getCrawlLinks()+"</td>"+
                             "<td>"+info.getCrawlDownloaded()+"</td>"+
-                            "<td>"+info.getCrawlRate()+"</td>"+
+                            "<td>"+info.getAvgCrawlRate()+"</td>"+
+                            "<td>"+info.getMaxCrawlRate()+"</td>"+
+                            "<td>"+info.getDuration()+"</td>"+
                             "<td> <form action=\"/shutdown?worker="+worker+"\" method=\"POST\">"+
                             "<input type=\"submit\" value=\"Shutdown\" /></form></td></tr>";
         }
@@ -256,7 +262,9 @@ public class MasterNode {
                 String status = request.queryParams("status");
                 int linksCrawled = Integer.parseInt(request.queryParams("crawled"));
                 int linksDownloaded = Integer.parseInt(request.queryParams("downloaded"));
-                double rate = Double.parseDouble(request.queryParams("rate")); 
+                double maxRate = Double.parseDouble(request.queryParams("max")); 
+                double avgRate = Double.parseDouble(request.queryParams("avg")); 
+                
                 if(!workerInfo.containsKey(workerEntry)){
                     
                     Date now = new Date();
@@ -264,7 +272,8 @@ public class MasterNode {
                     WorkerStatus newEntry = new WorkerStatus(curWorkerIndex++);
                     newEntry.setStatus(status);
                     newEntry.setLastSeen(now);
-
+                    newEntry.setStarted(now);
+                    
                     workerInfo.put(workerEntry, newEntry);
                     regWorkers++;
                 }else{
@@ -273,11 +282,19 @@ public class MasterNode {
                 		startedWorkers.remove(workerEntry);
                 		regWorkers++; //restart node
                 	}else {
-                		workerInfo.get(workerEntry).setLastSeen(new Date());
+                		Date now = new Date();
+                		workerInfo.get(workerEntry).setLastSeen(now);
                         workerInfo.get(workerEntry).setStatus(status);
                         workerInfo.get(workerEntry).setCrawlLinks(linksCrawled);
                         workerInfo.get(workerEntry).setCrawlDownloaded(linksDownloaded);
-                        workerInfo.get(workerEntry).setCrawlRate(rate);
+                        workerInfo.get(workerEntry).setAvgCrawlRate(avgRate);
+                        workerInfo.get(workerEntry).setMaxCrawlRate(maxRate);
+                        workerInfo.get(workerEntry).setDuration(now);
+                        if(status.equals("finished") && !finishedWorkers.contains(workerEntry)) {
+                        	workerInfo.get(workerEntry).setFinished(now);
+                        	finishedWorkers.add(workerEntry);
+                        }
+                        
                 	}                   
                 }
                 

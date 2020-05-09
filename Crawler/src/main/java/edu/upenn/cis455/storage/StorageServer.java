@@ -325,7 +325,7 @@ public class StorageServer {
 					.withRegion(Regions.US_EAST_1)
 					.build(); */
 		BufferedWriter writer;
-		int num_files = 1; //TODO: change later
+		int num_files = 0; //TODO: change later
 		int count = 0;
 		int fileCount = 0;
 		try {
@@ -349,7 +349,7 @@ public class StorageServer {
 		    String body;
 		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
 		        OperationStatus.SUCCESS) {
-		    	if(fileCount == 20000) { //new file
+		    	if(fileCount == 10000) { //new file
 		    		System.out.println("writing new file");
 		    		num_files++;
 		    		writer.close();

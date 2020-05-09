@@ -10,7 +10,9 @@ import java.net.*;
 import java.io.*;
 public class WorkerMonitor  extends Thread{
 	private int previous = 0;
-    
+    private double max = 0.0;
+    private double avgRate = 0.0;
+    private long duration = 0;
 
     public WorkerMonitor(){
 
@@ -20,12 +22,19 @@ public class WorkerMonitor  extends Thread{
     	int current = WorkerNode.getLinksCrawled();
     	double rate = 0.0;
     	rate = ( (double) current - (double) previous) / 10;
+    	if(rate > max) {
+    		max = rate;
+    	}
+    	if(duration != 0 && !WorkerNode.crawlerFinished()) {
+    		avgRate = WorkerNode.getLinksDownloaded() / duration; //total links downloaded/total seconds elapsed
+    	}    	
     	//if(WorkerNode.hasStarted) {
     	//	//System.out.println("current is : " + current + " previous is: " + previous + " calculated rate is: " + rate);
     	//}  	
     	previous = current;
        String url =  "http://"+ WorkerNode.getMasterUrl()+"/workerstatus?port=" + WorkerNode.getPort()
-                    + "&status="+WorkerNode.getStatus()+ "&crawled="+WorkerNode.getLinksCrawled() + "&downloaded="+WorkerNode.getLinksDownloaded() + "&rate="+rate;
+                    + "&status="+WorkerNode.getStatus()+ "&crawled="+WorkerNode.getLinksCrawled() + "&downloaded="+WorkerNode.getLinksDownloaded()
+                    + "&max="+max + "&avg="+avgRate;
         
         return url;
     }
@@ -49,6 +58,7 @@ public class WorkerMonitor  extends Thread{
                 //Sleep for 10 seconds
                 conn.disconnect();
                 Thread.sleep(10000);
+                duration += 10;
 
             }catch(MalformedURLException e ){
                 e.printStackTrace();

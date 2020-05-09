@@ -185,10 +185,11 @@ public class DistributedDocumentParserBolt implements IRichBolt{
     	
     	if(doc.getContentType() != null && (doc.getContentType().contains("text/html") || doc.getContentType().endsWith(".html"))) { //parse html doc
     		
-    		String html = new String(doc.getBody()); 
+    		String html = new String(doc.getBody());
     		Document jdoc = Jsoup.parse(html);
-    		LanguageIdentifier identifier = new LanguageIdentifier(jdoc.text());    		
-    		if(!identifier.getLanguage().equals("en") && identifier.isReasonablyCertain()) { //skip non english content
+    		LanguageIdentifier identifier = new LanguageIdentifier(jdoc.text());
+    		
+    		if(!identifier.getLanguage().equals("en") && !host.startsWith("en")) { //skip non english content
     			System.out.println("language: " + identifier.getLanguage() + "url: " + url);
     			DistributedDocumentParserBolt.activeThreads.getAndDecrement();
     			return;

@@ -91,6 +91,10 @@ public class WorkerNode {
     	
     }
     
+    public static boolean crawlerFinished() {
+    	return DistributedCrawler.getInstance().getShutdown();
+    }
+    
     public static int getLinksDownloaded() {
     	if(!hasStarted) {
     		return 0;
