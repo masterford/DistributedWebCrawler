@@ -57,7 +57,7 @@ public class HostSplitterBolt  implements IRichBolt{
             byte[] toSend = parameters.getBytes();
             os.write(toSend);
             os.flush();
-    
+            os.close();  
             // System.out.println("Sent data");
         } else
             conn.getOutputStream();
