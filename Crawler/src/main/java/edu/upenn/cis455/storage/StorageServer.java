@@ -327,6 +327,7 @@ public class StorageServer {
 		BufferedWriter writer;
 		int num_files = 1; //TODO: change later
 		int count = 0;
+		int fileCount = 0;
 		try {
 			writer = new BufferedWriter(new FileWriter(directory + "_" + num_files + ".txt"));
 		} catch (IOException e1) {
@@ -348,11 +349,12 @@ public class StorageServer {
 		    String body;
 		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
 		        OperationStatus.SUCCESS) {
-		    	if(count == 20000) { //new file
+		    	if(fileCount == 20000) { //new file
 		    		System.out.println("writing new file");
 		    		num_files++;
 		    		writer.close();
 		    		writer = new BufferedWriter(new FileWriter(directory + "_" + num_files + ".txt"));
+		    		fileCount = 0; //reset line counter
 		    	}
 		        url = new String(foundKey.getData());
 		        body = ((DocVal) myDB.getDocValBinding().entryToObject(foundData)).getBody();
@@ -361,6 +363,7 @@ public class StorageServer {
 		        writer.write(url + "$$$" + body  + "\n");
 		        writer.flush();
 		        count++;
+		        fileCount++;
 		    }
 		} catch (DatabaseException de) {
 		    System.err.println("Error accessing database." + de);
