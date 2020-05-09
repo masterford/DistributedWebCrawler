@@ -325,9 +325,10 @@ public class StorageServer {
 					.withRegion(Regions.US_EAST_1)
 					.build(); */
 		BufferedWriter writer;
+		int num_files = 1; //TODO: change later
 		int count = 0;
 		try {
-			writer = new BufferedWriter(new FileWriter(directory));
+			writer = new BufferedWriter(new FileWriter(directory + "_" + num_files + ".txt"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			return;
@@ -347,7 +348,12 @@ public class StorageServer {
 		    String body;
 		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
 		        OperationStatus.SUCCESS) {
-
+		    	if(count == 20000) { //new file
+		    		System.out.println("writing new file");
+		    		num_files++;
+		    		writer.close();
+		    		writer = new BufferedWriter(new FileWriter(directory + "_" + num_files + ".txt"));
+		    	}
 		        url = new String(foundKey.getData());
 		        body = ((DocVal) myDB.getDocValBinding().entryToObject(foundData)).getBody();
 		        body = body.replaceAll("\n", "");
@@ -373,7 +379,8 @@ public class StorageServer {
 		  //  getInstance().s3client.putObject(BUCKET_NAME, "CorpusA/corpusA.txt", new File(directory)); //TODO: replace crawA with node name
 		    
 		}		
-		System.out.println("total num_files: " + count);
+		System.out.println("total pages: " + count);
+		System.out.println("num files: " + num_files);
 		return;
 	}
 	
