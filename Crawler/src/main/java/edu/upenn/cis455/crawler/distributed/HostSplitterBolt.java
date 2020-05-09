@@ -96,12 +96,13 @@ public class HostSplitterBolt  implements IRichBolt{
         	   }  
     	   }
     	   	   
-            synchronized(WorkerNode.getWorkerTable()){
+           // synchronized(WorkerNode.getWorkerTable()){
                 int hostNum = Math.abs(host.hashCode() % (WorkerNode.getWorkerTable().size()));
                 if(hostNum == WorkerNode.workerIndex) {               	
                      this.collector.emit(new Values<Object>(url));
                      DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
-                }else {
+                }
+                else {
                 	Set<String> keys = WorkerNode.getWorkerTable().keySet();
                     String[] array = keys.toArray(new String[keys.size()]);
                    // System.out.println(WorkerNode.getWorkerTable());
@@ -123,7 +124,7 @@ public class HostSplitterBolt  implements IRichBolt{
                         DistributedCrawler.getInstance().incrementInflightMessages();
                     }
                 }               
-            }
+           // }
         }catch(IOException e) {
         	log.debug("HostSpliter bolt couldn't forward URL");
         	this.collector.emit(new Values<Object>(url));
