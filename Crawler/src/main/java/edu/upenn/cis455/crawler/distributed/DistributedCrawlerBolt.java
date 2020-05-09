@@ -691,7 +691,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 					//retrieve document
 					//System.out.println(url + ": Not modified");	
-					log.debug(url + ": Not modified");
+					log.info(url + ": Not modified");
 					collector.emit(new Values<Object>(url, doc, "false")); //don't store
 					DistributedCrawler.getInstance().incrementInflightMessages();
 					lastCrawled.put(hostName, new Date()); //update last crawled
@@ -762,7 +762,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				String contentType = responseHeaders.get("content-type");
 				DocVal store = new DocVal(size, contentType, body, new Date());
 				//System.out.println(url + ": Downloading");
-				log.debug(url + ": Downloading");
+				log.info(url + ": Downloading");
 				collector.emit(new Values<Object>(url, store, "true"));
 				//DistributedCrawler.getInstance().getFileCount().getAndIncrement();
 				DistributedCrawler.getInstance().incrementInflightMessages();
