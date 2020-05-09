@@ -51,7 +51,7 @@ public class S3Upload {
             File[] directoryListing = dir.listFiles();
             if (directoryListing != null) {
               for (File content : directoryListing) {
-            	  s3client.putObject(BUCKET_NAME, content.getName(), content); 
+            	  s3client.putObject(BUCKET_NAME, "corpus5/"+content.getName(), content); 
               }
             }
 			s3client.shutdown();
