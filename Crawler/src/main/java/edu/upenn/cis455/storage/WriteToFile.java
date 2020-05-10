@@ -7,9 +7,9 @@ public class WriteToFile {
 	public static void main(String[] args) {
 		String [] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H"};
 		try {
-			String directory = System.getProperty("user.dir")+ "/DistributedStorage/" + args[0];
+			String directory = System.getProperty("user.dir")+ "/DistributedStorage/";
 			StorageServer.getInstance().init(directory);
-			int index = Integer.parseInt(args[0].split("_")[1]);
+			int index = Integer.parseInt(args[0]);
 			File dir = new File(directory + "/upload");
 			dir.mkdir();
 			StorageServer.getInstance().writetoFile(directory + "/upload/corpus" + alphabet[index]);
