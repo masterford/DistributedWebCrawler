@@ -68,6 +68,7 @@ public class DistributedCrawler {
 		crawler.maxFileNum = Integer.MAX_VALUE; //TODO: change Later for Project
 		crawler.robotMap = new HashMap<String, RobotsTxtInfo>();
 		DistributedCrawler.bannedHosts = new HashSet<String>();
+		DistributedCrawler.whiteList = new HashSet<String>();
 		crawler.populateBannedHosts();
 		crawler.populateWhiteList();
 		crawler.lastCrawled = new HashMap<String, Date>();
@@ -129,6 +130,8 @@ public class DistributedCrawler {
 		DistributedCrawler.whiteList.add("en.wikipedia.org");
 		DistributedCrawler.whiteList.add("stackexchange.com");
 		DistributedCrawler.whiteList.add("stackoverflow.com");
+		DistributedCrawler.whiteList.add("news.seas.upenn.edu");
+		DistributedCrawler.whiteList.add("visitphilly.com");
 	  }
   
   public int getMaxFileNum() {
