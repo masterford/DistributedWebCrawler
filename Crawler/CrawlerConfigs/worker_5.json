@@ -1,4 +1,4 @@
 {
     "seed" : ["https://stackoverflow.com/questions?tab=Votes", "https://www.baeldung.com/"],
-    "args": [ "10", "150000"]
+    "args": [ "10", "300000"]
 }
