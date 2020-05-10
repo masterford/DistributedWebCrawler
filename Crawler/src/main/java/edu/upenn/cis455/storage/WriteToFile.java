@@ -5,7 +5,7 @@ import java.io.File;
 public class WriteToFile {
 
 	public static void main(String[] args) {
-		String [] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"};
+		String [] alphabet = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Z"};
 		try {
 			String directory = System.getProperty("user.dir")+ "/DistributedStorage/";
 			StorageServer.getInstance().init(directory);

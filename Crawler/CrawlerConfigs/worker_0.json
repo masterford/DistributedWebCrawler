@@ -1,4 +1,4 @@
 {
-    "seed" : ["https://en.wikipedia.org/", "https://www.ebay.com/", "https://medium.com/"],
-	"args": [ "10", "300000"]
+    "seed" : ["https://en.wikipedia.org/wiki/Benjamin_Franklin", "https://www.upenn.edu/", "https://en.wikipedia.org/wiki/University_of_Pennsylvania", "https://stackoverflow.com/questions"],
+	"args": [ "5", "50000"]
 }
