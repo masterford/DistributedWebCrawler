@@ -32,6 +32,7 @@ public class DistributedCrawler {
   private String hostNameMonitoring;
   private HashMap<String, RobotsTxtInfo> robotMap; //caches the results of robots.txt for each domain
   public static HashSet<String> bannedHosts; //set to maintain banned hosts, normalized
+  public static HashSet<String> whiteList; //set to maintain hosts that incorrectly get identified as non english
  // private HashSet<String> seenContent; //set to maintain seen content
   private HashMap<String, Date> lastCrawled; //data structure to keep track of the last time a hostname server was crawled
   private InetAddress hostMonitor;
@@ -68,6 +69,7 @@ public class DistributedCrawler {
 		crawler.robotMap = new HashMap<String, RobotsTxtInfo>();
 		DistributedCrawler.bannedHosts = new HashSet<String>();
 		crawler.populateBannedHosts();
+		crawler.populateWhiteList();
 		crawler.lastCrawled = new HashMap<String, Date>();
 		crawler.fileCount = new AtomicInteger(); //store number of downloaded files
 		crawler.linksCrawled = new AtomicInteger(); //store number of links crawled
@@ -119,6 +121,15 @@ public class DistributedCrawler {
 	DistributedCrawler.bannedHosts.add("instagram.com"); 
 	DistributedCrawler.bannedHosts.add("github.com"); 
   }
+  
+  public void populateWhiteList() {
+		DistributedCrawler.whiteList.add("thehill.com"); 
+		DistributedCrawler.whiteList.add("w3schools.com");
+		DistributedCrawler.whiteList.add("pubmed.ncbi.nlm.nih.gov");
+		DistributedCrawler.whiteList.add("en.wikipedia.org");
+		DistributedCrawler.whiteList.add("stackexchange.com");
+		DistributedCrawler.whiteList.add("stackoverflow.com");
+	  }
   
   public int getMaxFileNum() {
 	 return getInstance().maxFileNum;

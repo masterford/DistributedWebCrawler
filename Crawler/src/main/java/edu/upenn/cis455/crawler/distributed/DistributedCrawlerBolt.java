@@ -766,7 +766,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				DistributedCrawlerBolt.activeThreads.getAndDecrement();
 			
 			  }catch (UnknownHostException | NumberFormatException | MalformedURLException e) {
-				  System.out.print("exception caught: ");
+				  log.debug(e.getMessage());
 				  try {
 					socket.close();
 					DistributedCrawlerBolt.activeThreads.getAndDecrement();
@@ -779,7 +779,7 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 				  
 			  }
 			  catch (IOException | NullPointerException | DatabaseException | IndexOutOfBoundsException e) {
-				  System.out.print("exception caught: ");
+				  log.debug(e.getMessage());
 				//e.printStackTrace();
 				try {
 					if(socket == null) {
