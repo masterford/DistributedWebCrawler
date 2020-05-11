@@ -56,7 +56,7 @@ public class URLFrontier {
 	} 
 	 
 	/*Removes the next item from the frontier whilst taking into account priorities */
-	public synchronized String dequeue() {
+	public String dequeue() {
 		
 		URL urlObject;
 		try {
@@ -133,7 +133,7 @@ public class URLFrontier {
 				}
 			}
 		} catch (MalformedURLException e) {
-			
+			return frontier.poll();
 		} 
 		return frontier.poll();
 	}
