@@ -1,5 +1,5 @@
 /* *
- * @author: Ransford Antwi
+ * @author Ransford Antwi
  */
 
 package edu.upenn.cis455.crawler.distributed;
@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

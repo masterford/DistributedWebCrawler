@@ -1,8 +1,6 @@
 package edu.upenn.cis455.crawler.distributed;
 
-import edu.upenn.cis455.crawler.distributed.*;
 import java.io.*;
-import java.net.MalformedURLException;
 import edu.upenn.cis.stormlite.OutputFieldsDeclarer;
 import edu.upenn.cis.stormlite.TopologyContext;
 import edu.upenn.cis.stormlite.bolt.IRichBolt;
@@ -104,18 +102,9 @@ public class HostSplitterBolt  implements IRichBolt{
                 }
                 else {
                 	Set<String> keys = WorkerNode.getWorkerTable().keySet();
-                    String[] array = keys.toArray(new String[keys.size()]);
-                   // System.out.println(WorkerNode.getWorkerTable());
-                   // System.out.println("Got host number "+ hostNum+" for URL "+ host);        
+                    String[] array = keys.toArray(new String[keys.size()]);                         
                     String address = WorkerNode.getWorkerTable().get(String.valueOf(array[hostNum]));
-                   // System.out.println("address: " + address);
-                   // System.out.println("worker address: " + WorkerNode.getWorkerAddress());
-                   // if(address.equals(WorkerNode.getWorkerAddress())){
-                       // System.out.println("Forwarding "+ url + " to filter");
-                       // DistributedCrawler.getInstance().getFrontier().enqueue(url);
-                       // this.collector.emit(new Values<Object>(url));
-                       // DistributedCrawler.getInstance().incrementInflightMessages();  //signals a message is currently being routed
-                  //  }else{
+                   
                     if  ( sendJob(address, "POST","urlroute",url).getResponseCode() != 
                             HttpURLConnection.HTTP_OK) {
                         //throw new RuntimeException("Job definition request failed");

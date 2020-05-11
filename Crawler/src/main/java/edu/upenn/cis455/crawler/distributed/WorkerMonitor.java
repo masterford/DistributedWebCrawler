@@ -1,13 +1,12 @@
 package edu.upenn.cis455.crawler.distributed;
 
-
-import java.lang.*;
 import java.net.MalformedURLException;
 
 import edu.upenn.cis455.crawler.distributed.WorkerNode;
 
 import java.net.*;
-import java.io.*;
+
+/*UThis class is used by the worker node to send status updates to the master every 10 seconds  */
 public class WorkerMonitor  extends Thread{
 	private int previous = 0;
     private double max = 0.0;
@@ -17,7 +16,7 @@ public class WorkerMonitor  extends Thread{
     public WorkerMonitor(){
 
     }
-    //TODO: Change the way you are setting the keys read and written
+    
     public String constructGetRequest(){
     	int current = WorkerNode.getLinksCrawled();
     	double rate = 0.0;
@@ -27,10 +26,7 @@ public class WorkerMonitor  extends Thread{
     	}
     	if(duration != 0 && !WorkerNode.crawlerFinished()) {
     		avgRate = WorkerNode.getLinksDownloaded() / duration; //total links downloaded/total seconds elapsed
-    	}    	
-    	//if(WorkerNode.hasStarted) {
-    	//	//System.out.println("current is : " + current + " previous is: " + previous + " calculated rate is: " + rate);
-    	//}  	
+    	}    	 	
     	previous = current;
     	
     	int http2xx = WorkerNode.getHttp200();
@@ -47,9 +43,7 @@ public class WorkerMonitor  extends Thread{
 
     public void run(){
     	HttpURLConnection conn = null;
-    	//System.out.println("huh");
         while(!WorkerNode.isShutdown()){
-        	//HttpURLConnection conn;
             try{
 
                  //System.out.println("Getting url "+constructGetRequest());
@@ -59,8 +53,7 @@ public class WorkerMonitor  extends Thread{
                 conn = (HttpURLConnection)url.openConnection();
                 conn.setDoOutput(true);
                 conn.setRequestMethod("GET");
-                conn.getResponseCode();
-               // System.out.println("Sendin status " + conn.getResponseCode());
+                conn.getResponseCode();               
 
                 //Sleep for 10 seconds
                 conn.disconnect();

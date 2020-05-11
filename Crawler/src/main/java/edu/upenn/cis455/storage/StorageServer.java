@@ -1,3 +1,7 @@
+/*
+ * @author:Ransford Antwi
+ */
+
 package edu.upenn.cis455.storage;
 
 import java.io.BufferedWriter;
@@ -5,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
@@ -28,7 +31,6 @@ import com.sleepycat.je.Transaction;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import edu.upenn.cis455.crawler.XPathCrawler;
 
 public class StorageServer {
 
@@ -49,61 +51,12 @@ public class StorageServer {
 	public  void init(String directory) {
 		try {
 			getInstance().myDB = new DBWrapper(directory);
-		//	
-		//	if(s3client.doesBucketExist(BUCKET_NAME)) {
-			//	System.out.println("s3 Bucket Name already exists");
-			//	return;
-		//	}
-			//s3client.createBucket(BUCKET_NAME); Bucket already created
+		
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	/*Add user information to the database using the username as the key  /
-	public void addUserInfo(String username, UserVal val) {
-		
-		//declare database entry key-value pair
-		DatabaseEntry value = new DatabaseEntry();
-		DatabaseEntry key = new DatabaseEntry(username.getBytes());
-		
-		myDB.getUserValBinding().objectToEntry(val, value);
-		
-		//begin transaction
-		Transaction txn = myDB.getEnv().beginTransaction(null, null);
-		try {
-			myDB.getUserDB().put(txn, key, value);
-			
-			txn.commit(); //commit transaction
-		} catch (Exception e) {
-			if(txn != null) {
-				txn.abort();
-				txn = null;
-			}
-		}				
-	} */
-	
-	/* Get user information from database using the username as the key  /
-	public UserVal getUserInfo(String username) {
-		DatabaseEntry value = new DatabaseEntry();
-		DatabaseEntry key = new DatabaseEntry(username.getBytes());
-		
-		//begin transaction
-		Transaction txn = myDB.getEnv().beginTransaction(null, null);
-		try {
-			if(myDB.getUserDB().get(txn, key, value, LockMode.DEFAULT) != OperationStatus.SUCCESS){
-				return null;
-			}
-					
-			txn.commit(); //commit transaction
-		} catch (Exception e) {
-			if(txn != null) {
-				txn.abort();
-				txn = null;
-			}
-		}	
-		return (UserVal) myDB.getUserValBinding().entryToObject(value);
-	} */
 	
 	/*Add crawled document to database. URL is the key  */
 	public void addDocInfo(String url, DocVal val) {
@@ -202,71 +155,6 @@ public class StorageServer {
 		}	
 	}
 	
-	/*Add a new channel to database. Channel Name is the key  */
-	public void addChannelInfo(String name, ChannelStorage val) {
-			
-		//declare database entry key-value pair
-		DatabaseEntry value = new DatabaseEntry();
-		DatabaseEntry key = new DatabaseEntry(name.getBytes());
-		
-		myDB.getChannelValBinding().objectToEntry(val, value);
-		
-		//begin transaction
-		Transaction txn = myDB.getEnv().beginTransaction(null, null);
-		try {
-			myDB.getChannelDB().put(txn, key, value);
-			
-			txn.commit(); //commit transaction
-		} catch (Exception e) {
-			if(txn != null) {
-				txn.abort();
-				txn = null;
-			}
-		}				
-	}
-	
-	public int deleteChannel(String name) {	
-		DatabaseEntry key = new DatabaseEntry(name.getBytes());
-		
-		//begin transaction
-		Transaction txn = myDB.getEnv().beginTransaction(null, null);
-		try {			
-			if(myDB.getChannelDB().delete(txn, key) != OperationStatus.SUCCESS) {
-				return 0;
-			} else {
-				txn.commit(); //commit transaction
-				return 1;
-			}											
-		} catch (Exception e) {
-			if(txn != null) {
-				txn.abort();
-				txn = null;
-			}
-		}	
-		return 0;
-	}
-	
-	/*Retrieve Channel info from the database based on Channel Name key, null if specified channel doesn't exist */
-	public ChannelStorage getChannelInfo(String name) {
-		DatabaseEntry value = new DatabaseEntry();
-		DatabaseEntry key = new DatabaseEntry(name.getBytes());
-		
-		//begin transaction
-		Transaction txn = myDB.getEnv().beginTransaction(null, null);
-		try {
-			if(myDB.getChannelDB().get(txn, key, value, LockMode.DEFAULT) != OperationStatus.SUCCESS){
-				return null;
-			}
-					
-			txn.commit(); //commit transaction
-		} catch (Exception e) {
-			if(txn != null) {
-				txn.abort();
-				txn = null;
-			}
-		}	
-		return (ChannelStorage) myDB.getChannelValBinding().entryToObject(value);
-	}
 	
 	public boolean exists(String url) { //check if url already exists in DB
 		try {
@@ -289,43 +177,13 @@ public class StorageServer {
 		return true;
 	}
 	
-	public HashMap<String, ChannelStorage> getAllChannels() {
-		HashMap<String, ChannelStorage> channels = new HashMap<String, ChannelStorage>();
-		Cursor cursor = null;
-		try {
-		   
-		    // Open the cursor. 
-		    cursor = myDB.getChannelDB().openCursor(null, null);
-
-		    // Get the DatabaseEntry objects that the cursor will use.
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-
-		    // Iterate from the last record to the first in the database
-		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
-		        OperationStatus.SUCCESS) {
-
-		        String theKey = new String(foundKey.getData());
-		        channels.put(theKey, (ChannelStorage) myDB.getChannelValBinding().entryToObject(foundData));
-		    }
-		} catch (DatabaseException de) {
-		    System.err.println("Error accessing database." + de);
-		} finally {
-		    // Cursors must be closed.
-		    cursor.close();
-		}		
-		return channels;
-	}
 	
+	/*Writes content in DB to file. Each file will have at 
+	 * most 10000 lines where each line is a webpage  */
 	public void writetoFile(String directory) {
-		/*initialize s3 client /
-		getInstance().credentials = new BasicSessionCredentials(ACCESS_KEY, SECRET_KEY, SESSION_TOKEN);
-			getInstance().s3client = AmazonS3ClientBuilder.standard()
-					.withCredentials(new AWSStaticCredentialsProvider(credentials))
-					.withRegion(Regions.US_EAST_1)
-					.build(); */
+		
 		BufferedWriter writer;
-		int num_files = 0; //TODO: change later
+		int num_files = 0; 
 		int count = 0;
 		int fileCount = 0;
 		try {
@@ -387,6 +245,7 @@ public class StorageServer {
 		return;
 	}
 	
+	/*Upload content to Amazon S3  */
 	public void writetoS3(String directory) {
 		/* initialize s3 client */
 		JSONParser parser = new JSONParser();
@@ -470,35 +329,7 @@ public class StorageServer {
 		    cursor.close();		    		    
 		}
 		return count;
-	}
-	
-	/*
-	public HashMap<String, UserVal> getAllUsers() {
-		HashMap<String, UserVal> users = new HashMap<String, UserVal>();
-		Cursor cursor = null;
-		try {		   
-		    // Open the cursor. 
-		    cursor = myDB.getUserDB().openCursor(null, null);
-
-		    // Get the DatabaseEntry objects that the cursor will use.
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-
-		    // Iterate from the last record to the first in the database
-		    while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
-		        OperationStatus.SUCCESS) {
-
-		        String theKey = new String(foundKey.getData());
-		        users.put(theKey, (UserVal) myDB.getUserValBinding().entryToObject(foundData));
-		    }
-		} catch (DatabaseException de) {
-		    System.err.println("Error accessing database." + de);
-		} finally {
-		    // Cursors must be closed.
-		    cursor.close();
-		}		
-		return users;
-	} */
+	}		
 	
 	public void close() {
 		getInstance().myDB.closeDB();

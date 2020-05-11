@@ -217,7 +217,7 @@ public class DistributedCrawler {
 	  getInstance().frontier = new URLFrontier(seed);
   }
    
-  public synchronized void shutdown() { //TODO:
+  public synchronized void shutdown() { 
 	
 	  if(shutdownCalled) { //only proceed if this is the first time shutdown is called
 		  return; 
@@ -229,12 +229,13 @@ public class DistributedCrawler {
 			  }
 	  getInstance().shutdown = true;
 	  WorkerNode.setStatus("Finished");
-	  //WorkerNode.
+	  
 	  System.out.println("Set shutdown flag to: " + getInstance().getShutdown());
 	  if(DistributedCrawler.getInstance().diskFile != null) {
     	  DistributedCrawler.getInstance().diskFile.delete(); //delete URLDIsk File
       }
 	  
+	  /*Write contents of DataBase to File  */
 	  int index = WorkerNode.workerIndex;
 	  File dir = new File(storagePath + "/upload");
 	  dir.mkdir();
@@ -320,17 +321,5 @@ public class DistributedCrawler {
 		}
 		
 		return topo;
-  }
-  
-  
-  public void start() {
-	  
-	  while(!DistributedCrawler.getInstance().getShutdown()) {
-    	  
-      }
-	  System.out.println("Shutting Down Crawler Cluster");
-	  System.out.println("Writing to file"); 
-      DistributedCrawler.getInstance().getDB().writetoFile("corpus_html.txt");     
-      
-  	}  
+  } 
 }

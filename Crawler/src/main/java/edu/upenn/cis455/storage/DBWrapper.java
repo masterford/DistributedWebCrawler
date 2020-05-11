@@ -1,3 +1,7 @@
+/*
+ * @author:Ransford Antwi
+ */
+
 package edu.upenn.cis455.storage;
 
 import java.io.File;
@@ -5,13 +9,11 @@ import java.io.File;
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
-//import com.sleepycat.collections.StoredSortedMap;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.persist.EntityStore;
 
 /** (MS1, MS2) A wrapper class which should include:
   * - Set up of Berkeley DB
@@ -19,7 +21,6 @@ import com.sleepycat.persist.EntityStore;
   */
 public class DBWrapper {
 	
-	private static String envDirectory = null;
 	
 	//Instantiate string indentities
 	private static final String SEEN_STORE = "seen_store"; //name used to identify seenURLDB
@@ -44,7 +45,6 @@ public class DBWrapper {
 	EntryBinding<ChannelStorage> channelValBinding;
 	
 	private static Environment myEnv;
-	private static EntityStore store;
 	
 	public DBWrapper(String directory) {
 		
@@ -106,9 +106,6 @@ public class DBWrapper {
 		this.contentDB.close();
 		myEnv.close();
 	}
-	//public EntryBinding<UserVal> getUserValBinding() {
-	//	return this.userValBinding;
-	//}
 	
 	public EntryBinding<DocVal> getDocValBinding() {
 		return this.docValBinding;

@@ -4,18 +4,8 @@ package edu.upenn.cis455.crawler.distributed;
 import edu.upenn.cis.stormlite.Config;
 import edu.upenn.cis.stormlite.LocalCluster;
 import edu.upenn.cis.stormlite.Topology;
-import edu.upenn.cis.stormlite.TopologyBuilder;
-import edu.upenn.cis.stormlite.tuple.Fields;
-import static spark.Spark.setPort;
-
-import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-// import edu.upenn.cis.stormlite.DistributedCluster;
-import edu.upenn.cis.stormlite.TopologyContext;
-// import edu.upenn.cis.stormlite.routers.StreamRouter;
-import edu.upenn.cis.stormlite.tuple.Tuple;
 import edu.upenn.cis455.crawler.URLFrontier;
 import spark.Request;
 import spark.Response;
@@ -25,11 +15,9 @@ import java.util.*;
 import static spark.Spark.*;
 import java.io.*;
 import java.net.*;
-import java.net.InetAddress.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 
 public class WorkerNode {
@@ -276,8 +264,7 @@ public class WorkerNode {
     }
 
     /*
-        Note for Ransford: This is the function to change. The first parts reads the json files from
-                            the json file and then you can build your cluster and submit them..
+       Gets the seed URLs from the Crawler Configs directory, initializes the URLFrontier and the crawler
     */
     public static Topology getTopology(){
         JSONParser parser = new JSONParser();
@@ -302,7 +289,6 @@ public class WorkerNode {
                     frontier = DistributedCrawler.getInstance().getFrontier();
                 }else{
                 	DistributedCrawler.getInstance().getFrontier().enqueue(url);
-                   // frontier.enqueue(iterator.next());
                 }
             }
             
@@ -313,19 +299,8 @@ public class WorkerNode {
         	   argsString[i] = ob.toString();
         	   i++;
            }
-            DistributedCrawler.getInstance().setup(argsString);
-            
-            /*
-            testUrlSpout spout = new testUrlSpout();
-            HostSplitterBolt hostSplitter = new HostSplitterBolt();
-
-            TopologyBuilder builder = new TopologyBuilder();
-
-            // Only one source ("spout") for the words
-            builder.setSpout("WORD_SPOUT", spout, 1);
-            
-            // Parallel mappers, each of which gets specific words
-            builder.setBolt("Host_BOLT", hostSplitter, 1).shuffleGrouping("WORD_SPOUT"); */           
+            DistributedCrawler.getInstance().setup(argsString);           
+                   
             Topology topo = DistributedCrawler.getInstance().createTopology();
             return topo;
 
