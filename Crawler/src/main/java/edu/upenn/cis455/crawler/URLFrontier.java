@@ -135,7 +135,6 @@ public class URLFrontier {
 		} catch (MalformedURLException e) {
 			return frontier.poll();
 		} 
-		return frontier.poll();
 	}
 	
 	public void enqueue(String url) {				
