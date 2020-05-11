@@ -479,10 +479,11 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						if(responseCode == 304 && doc != null) { //don't download document, retrieve cached document and extract links
 							//retrieve document
 							//System.out.println(url + ": Not modified");	
-							log.debug(url + ": Not modified");
+							log.debug(url + ": Not modified");							
 							lastCrawled.put(hostName, new Date()); //update last crawled
 							collector.emit(new Values<Object>(url, doc, "false")); //emit document but tell next bolt not to store it
 							DistributedCrawler.getInstance().incrementInflightMessages();
+							DistributedCrawler.getInstance().getHttp3xx().getAndIncrement();
 							conn.disconnect();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
@@ -499,17 +500,24 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 								collector.emit(new Values<Object>(newUrl, null, "false")); //emit document but tell next bolt not to store it
 								DistributedCrawler.getInstance().incrementInflightMessages();
 							}
+							DistributedCrawler.getInstance().getHttp3xx().getAndIncrement(); //increase redirect count
 							conn.disconnect();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return; //continue run
 						}
 						if(statusXX == 4 || statusXX == 5) {
+							if(responseCode == 404) {
+								DistributedCrawler.getInstance().getHttp404().getAndIncrement();
+							}else {
+								DistributedCrawler.getInstance().getHttpOther().getAndIncrement();
+							}
 							conn.disconnect();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}																	
 						if(type == null || !isValidType(type)) {
 							conn.disconnect();
+							DistributedCrawler.getInstance().getHttp2xx().getAndIncrement();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}	
@@ -529,14 +537,16 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						//System.out.println("get response " + responseCode);	
 						if((responseCode / 100) != 2) {
 							conn.disconnect();	
+							DistributedCrawler.getInstance().getHttpOther().getAndIncrement();
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}
+						DistributedCrawler.getInstance().getHttp2xx().getAndIncrement();
 						long size = conn.getContentLengthLong();
 						//System.out.println("size is: " + size);
 						String body; 
 						if( size > DistributedCrawler.getInstance().getmaxDocSize()) {
-							conn.disconnect();
+							conn.disconnect();				
 							DistributedCrawlerBolt.activeThreads.getAndDecrement();
 							return;
 						}						
@@ -556,7 +566,6 @@ private String parseHTTPSBody(long contentLength, InputStream inputStream) throw
 						DocVal store = new DocVal( (int)size, contentType, body, new Date());
 						//System.out.println(url + ": Downloading");
 						log.debug(url + ": Downloading");
-						//DistributedCrawler.getInstance().getFileCount().getAndIncrement();
 						collector.emit(new Values<Object>(url, store, "true")); //emit document and tell next bolt to store doc	
 						DistributedCrawler.getInstance().incrementInflightMessages();
 						conn.disconnect();	

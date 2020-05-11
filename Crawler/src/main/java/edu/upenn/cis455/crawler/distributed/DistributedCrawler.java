@@ -38,6 +38,10 @@ public class DistributedCrawler {
   private InetAddress hostMonitor;
   private AtomicInteger fileCount;
   private AtomicInteger linksCrawled;
+  private AtomicInteger http2xx; //number of http 200 requests accepted
+  private AtomicInteger http404; //number of not found reponses
+  private AtomicInteger http3xx; //number of redirects
+  private AtomicInteger httpOther; //other response types
   private AtomicInteger inFlightMessages; //used to keep track of messages being routed so that we don't shutdown prematurely
   private URLFrontier frontier;
   private File diskFile;
@@ -74,6 +78,11 @@ public class DistributedCrawler {
 		crawler.lastCrawled = new HashMap<String, Date>();
 		crawler.fileCount = new AtomicInteger(); //store number of downloaded files
 		crawler.linksCrawled = new AtomicInteger(); //store number of links crawled
+		crawler.http2xx = new AtomicInteger();
+		crawler.http404 = new AtomicInteger();
+		crawler.http3xx = new AtomicInteger();
+		crawler.httpOther = new AtomicInteger();
+		
 		crawler.inFlightMessages = new AtomicInteger();
 				
 		try {
@@ -115,7 +124,7 @@ public class DistributedCrawler {
   }
   
   public void populateBannedHosts() {
-	DistributedCrawler.bannedHosts.add("xxx.com"); //TODO: populate
+	DistributedCrawler.bannedHosts.add("xxx.com"); 
 	DistributedCrawler.bannedHosts.add("facebook.com");
 	DistributedCrawler.bannedHosts.add("t.co"); 
 	DistributedCrawler.bannedHosts.add("twitter.com"); 
@@ -166,6 +175,22 @@ public class DistributedCrawler {
   
   public AtomicInteger getLinksCrawled() {
 	  return getInstance().linksCrawled;
+  }
+  
+  public AtomicInteger getHttp2xx() {
+	  return getInstance().http2xx;
+  }
+  
+  public AtomicInteger getHttp404() {
+	  return getInstance().http404;
+  }
+  
+  public AtomicInteger getHttp3xx() {
+	  return getInstance().http3xx;
+  }
+  
+  public AtomicInteger getHttpOther() {
+	  return getInstance().httpOther;
   }
    
   public StorageServer getDB() {

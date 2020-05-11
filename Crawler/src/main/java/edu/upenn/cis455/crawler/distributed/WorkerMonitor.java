@@ -32,20 +32,27 @@ public class WorkerMonitor  extends Thread{
     	//	//System.out.println("current is : " + current + " previous is: " + previous + " calculated rate is: " + rate);
     	//}  	
     	previous = current;
+    	
+    	int http2xx = WorkerNode.getHttp200();
+    	int http3xx = WorkerNode.getHttp3xx();
+    	int httpOther = WorkerNode.getHttpOther();
+    	int http404 = WorkerNode.getHttp404();
+    	
        String url =  "http://"+ WorkerNode.getMasterUrl()+"/workerstatus?port=" + WorkerNode.getPort()
                     + "&status="+WorkerNode.getStatus()+ "&crawled="+WorkerNode.getLinksCrawled() + "&downloaded="+WorkerNode.getLinksDownloaded()
-                    + "&max="+max + "&avg="+avgRate;
+                    + "&max="+max + "&avg="+avgRate + "&http2xx="+http2xx + "&http3xx="+http3xx + "&other="+httpOther + "&http404="+http404;
         
         return url;
     }
 
     public void run(){
     	HttpURLConnection conn = null;
+    	//System.out.println("huh");
         while(!WorkerNode.isShutdown()){
         	//HttpURLConnection conn;
             try{
 
-                // System.out.println("Getting url "+constructGetRequest());
+                 //System.out.println("Getting url "+constructGetRequest());
                 
                 URL url = new URL(constructGetRequest());
                 
@@ -58,7 +65,9 @@ public class WorkerMonitor  extends Thread{
                 //Sleep for 10 seconds
                 conn.disconnect();
                 Thread.sleep(10000);
-                duration += 10;
+                if(!WorkerNode.crawlerFinished()) {
+                	duration += 10;
+                }               
 
             }catch(MalformedURLException e ){
                 e.printStackTrace();

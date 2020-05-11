@@ -36,6 +36,7 @@ public class URLFrontier {
 		priorityTwo.add("stackoverflow.com");
 		priorityTwo.add("reddit.com");
 		priorityTwo.add("bbc.com");
+		priorityTwo.add("wsj.com");
 	}
 	
 	public void addPriorityOne(String host) {
@@ -56,6 +57,7 @@ public class URLFrontier {
 	 
 	/*Removes the next item from the frontier whilst taking into account priorities */
 	public synchronized String dequeue() {
+		
 		URL urlObject;
 		try {
 			String url = frontier.peek();
@@ -132,7 +134,7 @@ public class URLFrontier {
 			}
 		} catch (MalformedURLException e) {
 			
-		}
+		} 
 		return frontier.poll();
 	}
 	

@@ -11,6 +11,10 @@ public class WorkerStatus {
     String currentCrawl;
     int linksCrawled = 0;
     int linksDownloaded = 0;
+    int okCount = 0;
+    int redirectCount = 0;
+    int notFound = 0;
+    int other = 0;
     double maxCrawlRate =0;
     double avgCrawlRate =0;
     int workerIndex=0;
@@ -75,6 +79,38 @@ public class WorkerStatus {
     
     public void setCrawlDownloaded(int sum){
         linksDownloaded = sum;
+    }
+    
+    public int getHttpOK(){
+        return okCount;
+    }
+    
+    public void setHttp200(int num){
+        okCount = num;
+    }
+    
+    public int getHttpRedirectCount(){
+        return redirectCount;
+    }
+    
+    public void setHttpRedirectCount(int num){
+        redirectCount = num;
+    }
+    
+    public int getHttpNotFound(){
+        return notFound;
+    }
+    
+    public void setHttpNotFound(int num){
+        notFound = num;
+    }
+    
+    public int getHttpOther(){
+        return other;
+    }
+    
+    public void setHttpOther(int num){
+        other = num;
     }
 
     public double getMaxCrawlRate(){

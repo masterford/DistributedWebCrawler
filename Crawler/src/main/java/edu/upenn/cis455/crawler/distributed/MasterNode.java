@@ -1,23 +1,10 @@
 package edu.upenn.cis455.crawler.distributed;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static spark.Spark.*;
 import java.util.*;
 import java.net.*;
-import edu.upenn.cis.stormlite.Config;
-import edu.upenn.cis.stormlite.LocalCluster;
-import edu.upenn.cis.stormlite.Topology;
-import edu.upenn.cis.stormlite.TopologyBuilder;
-import edu.upenn.cis.stormlite.tuple.Fields;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.io.*;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.*;
-import java.net.InetAddress.*;
 
 
 public class MasterNode {
@@ -49,7 +36,6 @@ public class MasterNode {
         HashMap<String, String> workerTable = new HashMap<String, String>(); 
 
         // int[] rand = new Random().ints(0, workerInfo.size()).distinct().limit(workerInfo.size()).toArray();
-        int i =0 ;
         String output = null;
         for (String worker : workerInfo.keySet()){
             WorkerStatus value = workerInfo.get(worker);
@@ -108,6 +94,10 @@ public class MasterNode {
                     "<th>Avg Crawl Rate (links/sec)</th>"+
                     "<th>Max Crawl Rate (links/sec)</th>"+
                     "<th>Crawl Duration (minutes)</th>"+
+                    "<th>200 Responses </th>"+
+                    "<th>3xx Responses </th>"+
+                    "<th>404 Responses </th>"+
+                    "<th>Other Http Responses </th>"+
                     "<th>ShutDown</th></tr>";
 
         for (Map.Entry mapElement : workerInfo.entrySet()){
@@ -121,6 +111,10 @@ public class MasterNode {
                             "<td>"+info.getAvgCrawlRate()+"</td>"+
                             "<td>"+info.getMaxCrawlRate()+"</td>"+
                             "<td>"+info.getDuration()+"</td>"+
+                            "<td>"+info.getHttpOK()+"</td>"+
+                            "<td>"+info.getHttpRedirectCount()+"</td>"+
+                            "<td>"+info.getHttpNotFound()+"</td>"+
+                            "<td>"+info.getHttpOther()+"</td>"+
                             "<td> <form action=\"/shutdown?worker="+worker+"\" method=\"POST\">"+
                             "<input type=\"submit\" value=\"Shutdown\" /></form></td></tr>";
         }
@@ -262,6 +256,10 @@ public class MasterNode {
                 String status = request.queryParams("status");
                 int linksCrawled = Integer.parseInt(request.queryParams("crawled"));
                 int linksDownloaded = Integer.parseInt(request.queryParams("downloaded"));
+                int http200 = Integer.parseInt(request.queryParams("http2xx"));
+                int http3xx = Integer.parseInt(request.queryParams("http3xx"));
+                int http404 = Integer.parseInt(request.queryParams("http404"));
+                int httpOther = Integer.parseInt(request.queryParams("other"));
                 double maxRate = Double.parseDouble(request.queryParams("max")); 
                 double avgRate = Double.parseDouble(request.queryParams("avg")); 
                 
@@ -290,6 +288,10 @@ public class MasterNode {
                         workerInfo.get(workerEntry).setAvgCrawlRate(avgRate);
                         workerInfo.get(workerEntry).setMaxCrawlRate(maxRate);
                         workerInfo.get(workerEntry).setDuration(now);
+                        workerInfo.get(workerEntry).setHttp200(http200);
+                        workerInfo.get(workerEntry).setHttpNotFound(http404);
+                        workerInfo.get(workerEntry).setHttpOther(httpOther);
+                        workerInfo.get(workerEntry).setHttpRedirectCount(http3xx);
                         if(status.equals("finished") && !finishedWorkers.contains(workerEntry)) {
                         	workerInfo.get(workerEntry).setFinished(now);
                         	finishedWorkers.add(workerEntry);

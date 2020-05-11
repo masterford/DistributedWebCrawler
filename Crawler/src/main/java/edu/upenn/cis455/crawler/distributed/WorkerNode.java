@@ -90,6 +90,39 @@ public class WorkerNode {
     	}
     	
     }
+    public static int getHttp200() {
+    	if(!hasStarted) {
+    		return 0;
+    	}else {
+    		return DistributedCrawler.getInstance().getHttp2xx().get();
+    	}
+    	
+    }
+    public static int getHttp3xx() {
+    	if(!hasStarted) {
+    		return 0;
+    	}else {
+    		return DistributedCrawler.getInstance().getHttp3xx().get();
+    	}
+    	
+    }
+    public static int getHttp404() {
+    	if(!hasStarted) {
+    		return 0;
+    	}else {
+    		return DistributedCrawler.getInstance().getHttp404().get();
+    	}
+    	
+    }
+    
+    public static int getHttpOther() {
+    	if(!hasStarted) {
+    		return 0;
+    	}else {
+    		return DistributedCrawler.getInstance().getHttpOther().get();
+    	}
+    	
+    }
     
     public static boolean crawlerFinished() {
     	return DistributedCrawler.getInstance().getShutdown();
